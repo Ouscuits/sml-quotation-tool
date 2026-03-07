@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUO — SML Quotation Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F4F4F4;--surface:#fff;--surface2:#f7f7f7;--border:#4a4a4a;--border-light:#d0d0d0;
+  --input-text:#1a3a6b;--label:#5a5a5a;--dark:#1A1A1A;--red:#E21B1B;--red-light:rgba(226,27,27,0.07);
+  --calc:#e8eef7;--calc-border:#a8bcda;--green:#006633;--radius:3px;--shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;font-size:13px}
+
+/* ANIMATED LOGO + TITLE */
+.logo-area{display:flex;flex-direction:column;align-items:center;padding:20px 0 6px;cursor:pointer}
+.logo-area video{width:20vw;min-width:160px;max-width:280px;height:auto}
+.logo-area .logo-title{font-size:1.1rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--label);margin-top:-94px}
+.app-badge{background:var(--red);color:#fff;font-weight:700;font-size:.85rem;letter-spacing:.08em;padding:4px 14px 4px 10px;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);line-height:1}
+.topbar-title{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#777}
+.topbar-right{margin-left:auto;font-family:'Space Mono',monospace;font-size:.58rem;color:#444;letter-spacing:.08em;text-align:right;line-height:1.7}
+.topbar-settings-btn{position:fixed;top:16px;right:16px;z-index:200;font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#1a2744;color:#fff;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,0.18)}
+.topbar-settings-btn:hover{background:#263a5e}
+
+
+/* LAYOUT */
+.page{display:none;padding:28px 32px 60px;max-width:1280px;margin:0 auto}
+.page.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-title{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:4px}
+.page-sub{font-size:.78rem;color:var(--label);margin-bottom:24px;line-height:1.5}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.card-head{background:#2a2a2a;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-head h3{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ccc}
+.card-head .card-tag{font-family:'Space Mono',monospace;font-size:.72rem;color:#aaa;letter-spacing:.08em}
+.card-body{padding:16px}
+
+/* FORM GRID */
+.fg{display:grid;gap:12px 16px}
+.fg-2{grid-template-columns:1fr 1fr}.fg-3{grid-template-columns:1fr 1fr 1fr}
+.fg-4{grid-template-columns:1fr 1fr 1fr 1fr}.fg-5{grid-template-columns:1fr 1fr 1fr 1fr 1fr}
+.col-span-2{grid-column:span 2}.col-span-3{grid-column:span 3}
+
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--label);line-height:1}
+.f label .req{color:var(--red);margin-left:2px}
+.f input[type="text"],.f input[type="number"],.f select,.f textarea{
+  font-family:'Space Mono',monospace;font-size:.82rem;font-weight:500;color:var(--input-text);
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:7px 10px;width:100%;
+  transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+.f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(226,27,27,0.1)}
+.f input.calc{background:var(--calc);border-color:var(--calc-border);color:#2a4a80;cursor:default}
+.f select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a5a5a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.f textarea{resize:vertical;min-height:60px}
+.input-unit{position:relative}
+.input-unit input{padding-right:36px}
+.input-unit .unit{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:'Space Mono',monospace;font-size:.62rem;color:#999;pointer-events:none}
+.divider{height:1px;background:#eee;margin:12px 0;grid-column:1/-1}
+.section-label{grid-column:1/-1;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);padding-bottom:4px;border-bottom:1px solid #f0f0f0;margin-bottom:2px}
+.mode-ht .ht-only{display:block}.mode-ht .pfl-only{display:none}
+.mode-pfl .pfl-only{display:block}.mode-pfl .ht-only{display:none}
+.ht-only,.pfl-only{display:none}
+
+/* BUTTONS */
+.btn-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px}
+.btn{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:var(--radius);padding:10px 28px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--red);color:#fff}.btn-primary:hover{background:#b01818;box-shadow:0 4px 12px rgba(226,27,27,0.25);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:#888;border:1.5px solid #ccc}.btn-ghost:hover{color:var(--dark);border-color:#888}
+.btn-dark{background:var(--dark);color:#fff}.btn-dark:hover{background:#333}
+.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:#004d26}
+.btn-print{background:#2a4a80;color:#fff}.btn-print:hover{background:#1a3060}
+
+/* ERROR */
+.err{display:none;background:var(--red-light);border-left:3px solid var(--red);color:var(--red);font-size:.72rem;padding:8px 12px;margin-top:12px;font-family:'Space Mono',monospace}
+.err.show{display:block;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* TILES */
+.tiles{display:grid;gap:12px;margin-bottom:20px}
+.tile{background:#fff;border:2px solid var(--border-light);border-radius:var(--radius);padding:18px;cursor:pointer;transition:.18s;position:relative}
+.tile::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);transform:scaleY(0);transition:.18s;transform-origin:bottom}
+.tile:hover{border-color:#aaa;box-shadow:0 3px 12px rgba(0,0,0,0.08);transform:translateY(-2px)}
+.tile.sel{border-color:var(--red);box-shadow:0 3px 14px rgba(226,27,27,0.12)}
+.tile.sel::before{transform:scaleY(1)}
+.tile-check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:transparent;transition:.18s}
+.tile.sel .tile-check{background:var(--red);border-color:var(--red);color:#fff}
+.tile-name{font-weight:700;font-size:1.15rem;color:var(--dark)}
+
+/* COUNTRY DROPDOWN */
+.country-dropdown{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:600;color:var(--dark);background:#fff;border:2px solid var(--border-light);border-radius:var(--radius);padding:16px 40px 16px 18px;width:100%;cursor:pointer;transition:.18s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%235a5a5a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.country-dropdown:hover{border-color:#aaa;box-shadow:0 3px 12px rgba(0,0,0,0.08)}
+.country-dropdown:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(226,27,27,0.1)}
+
+/* LOGIN SCREEN */
+.login-screen{position:fixed;inset:0;z-index:900;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.login-screen.hidden{display:none}
+.login-box{background:#fff;border-radius:8px;padding:40px 36px 32px;width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center}
+.login-box video{width:200px;height:auto;margin-bottom:8px}
+.login-box h3{font-size:.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dark);margin-bottom:20px}
+.login-box .login-field{text-align:left;margin-bottom:12px}
+.login-box .login-field label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--label);margin-bottom:4px;display:block}
+.login-box input{font-family:'Space Mono',monospace;font-size:.85rem;width:100%;padding:10px 14px;border:2px solid var(--border-light);border-radius:var(--radius)}
+.login-box input:focus{outline:none;border-color:var(--red)}
+.login-err{color:var(--red);font-size:.72rem;font-weight:600;margin-bottom:8px;min-height:18px}
+.login-box .btn{width:100%;justify-content:center;margin-top:4px}
+.app-wrap{display:none}
+.app-wrap.visible{display:block}
+.topbar-user-info{position:fixed;top:16px;left:16px;z-index:200;font-size:.68rem;color:#888;font-weight:600;letter-spacing:.04em}
+.topbar-user-info span{color:var(--dark)}
+.topbar-logout-btn{position:fixed;top:16px;right:130px;z-index:200;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:#888;border:1.5px solid #ccc;border-radius:6px;padding:8px 14px;cursor:pointer;transition:.15s}
+.topbar-logout-btn:hover{color:var(--red);border-color:var(--red)}
+
+/* ADMIN TABLE */
+.admin-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px}
+.admin-table thead tr{background:#2a2a2a}
+.admin-table th{padding:9px 12px;text-align:left;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
+.admin-table td{padding:8px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle;font-size:.78rem}
+.admin-table tbody tr:hover{background:#fafafa}
+.admin-table input,.admin-table select{font-family:'Space Mono',monospace;font-size:.75rem;padding:5px 8px;border:1.5px solid var(--border);border-radius:2px;background:#fff}
+.admin-table input:focus,.admin-table select:focus{outline:none;border-color:var(--red)}
+
+/* COLLAPSIBLE MACHINE CARDS */
+.mach-cfg-card-head{cursor:pointer;user-select:none}
+.mach-cfg-card-head .mch-toggle{margin-left:auto;color:#666;font-size:.7rem;transition:.2s}
+.mach-cfg-card.open .mach-cfg-card-head .mch-toggle{transform:rotate(180deg)}
+.mach-cfg-card .mach-cfg-body{display:none}
+.mach-cfg-card.open .mach-cfg-body{display:block}
+
+/* IMAGE UPLOAD */
+.img-upload-area{border:2px dashed var(--border-light);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:.18s;max-width:300px}
+.img-upload-area:hover{border-color:var(--red);background:var(--red-light)}
+.img-upload-area.has-img{border-style:solid;padding:8px}
+.img-upload-area img{max-width:100%;max-height:200px;border-radius:2px}
+.img-upload-area .placeholder{font-size:.72rem;color:#aaa}
+
+/* TWO-COLUMN LAYOUT */
+.s3-wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+
+/* MACHINE CHECKLIST */
+.machine-list{display:flex;flex-direction:column;gap:2px;max-height:420px;overflow-y:auto}
+.machine-list::-webkit-scrollbar{width:5px}
+.machine-list::-webkit-scrollbar-track{background:#f0f0f0}
+.machine-list::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+.mach-col-hdr{display:grid;gap:8px;padding:4px 10px 6px;border-bottom:1px solid #eee;margin-bottom:4px}
+.mach-col-hdr span{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.mach-col-hdr span:not(:first-child):not(:nth-child(2)){text-align:right}
+.mach-item{display:grid;gap:8px;align-items:center;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:.12s;border:1px solid transparent}
+.mach-item:hover{background:#f8f8f8}
+.mach-item.checked{background:#fff8f8;border-color:rgba(226,27,27,0.15)}
+.mach-cb{width:16px;height:16px;border:1.5px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;background:#fff}
+.mach-item.checked .mach-cb{background:var(--red);border-color:var(--red)}
+.mach-item.checked .mach-cb::after{content:'\2713';font-size:10px;font-weight:800;color:#fff;line-height:1}
+.mach-name{font-size:.72rem;font-weight:600;color:var(--dark)}
+.mach-val{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--input-text);text-align:right}
+.mach-setup-inp{font-family:'Space Mono',monospace;font-size:.68rem;font-weight:500;color:var(--input-text);border:1.5px solid var(--border);border-radius:2px;padding:3px 6px;width:55px;text-align:center;background:#fff}
+.mach-setup-inp:disabled{background:#eee;color:#bbb;border-color:#ddd;cursor:not-allowed}
+.mach-setup-inp:focus{outline:none;border-color:var(--red)}
+/* HT grid: checkbox, name, setup, oneHit, sheetsSetup */
+.ht-mach-hdr{grid-template-columns:20px 1fr 75px 75px 65px}
+.ht-mach-row{grid-template-columns:20px 1fr 75px 75px 65px}
+/* PFL grid: checkbox, name, setup, oneHit, front, waste%, metersSetup */
+.pfl-mach-hdr{grid-template-columns:20px 1fr 70px 70px 50px 50px 55px}
+.pfl-mach-row{grid-template-columns:20px 1fr 70px 70px 50px 50px 55px}
+
+/* TECH PANEL */
+.tech-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:56px}
+.tech-card-head{background:#2a2a2a;padding:9px 14px;display:flex;align-items:center;justify-content:space-between}
+.tech-card-head h3{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ccc}
+.tech-card-body{padding:12px 14px}
+.tech-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid #f0f0f0}
+.tech-row:last-child{border-bottom:none}
+.tech-lbl{font-size:.68rem;color:var(--label);flex:1;line-height:1.3}
+.tech-val{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:500;color:var(--input-text);background:var(--calc);border:1px solid var(--calc-border);padding:3px 8px;border-radius:2px;min-width:72px;text-align:right;white-space:nowrap}
+.tech-section{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#bbb;padding:8px 0 4px}
+
+/* COST TABLE */
+.cost-outer{display:grid;grid-template-columns:160px 1fr;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.cost-labels{background:var(--surface2);border-right:1px solid var(--border-light)}
+.cost-labels .cost-col-head{background:transparent;color:#aaa;text-align:left;padding:8px 12px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.cost-labels .cost-col-qty{background:transparent;color:transparent;padding:6px 12px;font-size:.78rem;border-bottom:1px solid var(--border-light)}
+.cost-labels .cost-row{display:flex;align-items:center;padding:6px 12px;border-bottom:1px solid #f0f0f0}
+.cost-labels .cost-row:last-child{border-bottom:none}
+.cost-labels .cost-row .cost-lbl{font-size:.68rem;font-weight:600;color:var(--label)}
+.cost-data{display:grid;grid-template-columns:repeat(4,1fr)}
+.cost-data .cost-col{border-right:1px solid var(--border-light)}
+.cost-data .cost-col:last-child{border-right:none}
+.cost-col-head{background:#2a2a2a;padding:8px 12px;text-align:center;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb}
+.cost-col-qty{background:#f0f0f0;padding:6px 12px;text-align:center;font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border-light)}
+.cost-row{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #f0f0f0}
+.cost-row:last-child{border-bottom:none}
+.cost-row.total-row{background:#f8f8f8}
+.cost-row.price-row{background:#f0f4ff}
+.cost-row.gp-row{background:#f0fff4}
+.cost-val{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:600;color:var(--input-text)}
+.cost-val.total{color:var(--dark);font-weight:700}
+.cost-val.price{color:#2a4a80;font-weight:700}
+.cost-val.gp{color:var(--green);font-weight:700}
+
+/* PRINT */
+.print-wrap{background:#fff;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+.print-header{background:#1a1a1a;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.print-header-left{display:flex;align-items:center;gap:14px}
+.print-header h2{font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.print-header .meta{font-family:'Space Mono',monospace;font-size:.62rem;color:#555;line-height:1.6;text-align:right}
+.print-body{padding:20px 24px}
+.print-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px}
+.print-section-title{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);border-bottom:1px solid #eee;padding-bottom:6px;margin-bottom:10px}
+.print-info-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #eee}
+.print-info-row:last-child{border-bottom:none}
+.print-info-lbl{font-size:.72rem;color:var(--label)}
+.print-info-val{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:600;color:var(--input-text)}
+.print-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-bottom:16px}
+.print-table thead tr{background:#f0f0f0}
+.print-table th{padding:7px 10px;text-align:left;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label);border-bottom:2px solid var(--border-light);white-space:nowrap}
+.print-table th.r{text-align:right}
+.print-table td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:var(--dark)}
+.print-table td.r{text-align:right;font-family:'Space Mono',monospace;color:var(--input-text);font-weight:500}
+.print-img{max-width:180px;max-height:140px;border:1px solid #eee;border-radius:3px}
+.pricing-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden}
+.psg-col{border-right:1px solid var(--border-light)}.psg-col:last-child{border-right:none}
+.psg-head{background:#2a2a2a;padding:8px 12px;text-align:center;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb}
+.psg-qty{background:#f4f4f4;padding:6px 12px;text-align:center;font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border-light)}
+.psg-row{padding:6px 12px;border-bottom:1px solid #f4f4f4;display:flex;justify-content:space-between}
+.psg-row:last-child{border-bottom:none}
+.psg-lbl{font-size:.65rem;color:var(--label)}
+.psg-val{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:600;color:var(--input-text)}
+.psg-val.hi{color:#2a4a80;font-size:.82rem}
+.psg-val.gp{color:var(--green)}
+.psg-col.na .psg-qty,.psg-col.na .psg-val{color:#ccc}
+
+/* SUB-AREA BOX */
+.sub-area{background:#f9f9f9;border:1px solid #e0e0e0;border-radius:3px;padding:12px 14px;margin-bottom:12px}
+.sub-area-title{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--red);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid #eee}
+.sub-area-title span{font-weight:400;color:#aaa;text-transform:none;letter-spacing:0}
+
+/* SETTINGS */
+.settings-overlay{display:none;position:fixed;inset:0;z-index:500;background:var(--bg)}
+.settings-overlay.open{display:flex;flex-direction:column}
+.settings-panel{background:var(--bg);width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.settings-logo{display:flex;flex-direction:column;align-items:center;padding:20px 0 6px}
+.settings-logo video{width:20vw;min-width:160px;max-width:280px;height:auto}
+.settings-logo .logo-title{font-size:1.1rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--label);margin-top:20px}
+.settings-close-btn{position:fixed;top:16px;right:16px;z-index:600;font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#1a2744;color:#fff;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,0.18)}
+.settings-close-btn:hover{background:#263a5e}
+.settings-tabs{background:transparent;padding:0 32px;display:flex;gap:8px;flex-shrink:0;justify-content:center;margin-top:16px;margin-bottom:8px;position:relative;z-index:10}
+.settings-tab{padding:10px 20px;font-size:.82rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;cursor:pointer;border:2px solid var(--border-light);border-radius:var(--radius);background:#fff;transition:.15s;white-space:nowrap;position:relative;z-index:11}
+.settings-tab:hover{border-color:#aaa;color:var(--dark)}.settings-tab.active{border-color:var(--red);color:var(--dark);box-shadow:0 3px 14px rgba(226,27,27,0.12)}
+.settings-body{flex:1;overflow-y:auto;padding:28px 32px 60px;max-width:1280px;margin:0 auto;width:100%}
+.settings-section{display:none}.settings-section.active{display:block}
+.cfg-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px}
+.cfg-table thead tr{background:#2a2a2a}
+.cfg-table th{padding:9px 12px;text-align:left;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
+.cfg-table th.r{text-align:right}
+.cfg-table td{padding:6px 8px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.cfg-table tbody tr:last-child td{border-bottom:none}
+.cfg-table tbody tr:hover{background:#fafafa}
+.cfg-input{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:500;color:var(--input-text);border:1.5px solid var(--border);border-radius:2px;padding:5px 8px;width:100%;background:#fff;transition:.15s}
+.cfg-input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(226,27,27,0.08)}
+.cfg-input.wide{min-width:180px}
+.settings-save-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding:14px 16px;background:#fff;border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow)}
+.settings-save-row p{font-size:.75rem;color:var(--label)}
+.save-ok{color:var(--green);font-size:.72rem;font-weight:600;display:none}
+.mach-cfg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:16px}
+.mach-cfg-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.mach-cfg-card-head{background:#2a2a2a;padding:9px 14px;display:flex;align-items:center;gap:10px}
+.mach-cfg-card-head input{background:transparent;border:none;border-bottom:1px solid #555;color:#ddd;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;flex:1;padding:2px 4px;outline:none;letter-spacing:.04em}
+.mach-cfg-card-head input::placeholder{color:#555}
+.mach-cfg-body{padding:14px}
+.mach-cfg-section{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid #f0f0f0}
+.mach-cfg-section:first-child{margin-top:0}
+.mach-cfg-row{display:grid;gap:10px;margin-bottom:8px}
+.mach-cfg-row.col2{grid-template-columns:1fr 1fr}.mach-cfg-row.col3{grid-template-columns:1fr 1fr 1fr}
+.mach-cfg-row.col4{grid-template-columns:1fr 1fr 1fr 1fr}
+.mf{display:flex;flex-direction:column;gap:3px}
+.mf label{font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--label)}
+.mf .cfg-input{font-size:.75rem;padding:4px 7px}
+.mf .cfg-calc{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:600;color:var(--input-text);background:var(--calc);border:1px solid var(--calc-border);border-radius:2px;padding:4px 7px}
+.del-mach-btn{background:transparent;border:1px solid #444;color:#888;border-radius:2px;padding:2px 8px;font-size:.65rem;cursor:pointer;transition:.15s;flex-shrink:0}
+.del-mach-btn:hover{background:var(--red);border-color:var(--red);color:#fff}
+.add-machine-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;background:#fff;border:2px dashed var(--border-light);border-radius:var(--radius);cursor:pointer;font-size:.75rem;font-weight:600;color:#aaa;transition:.15s;width:100%}
+.add-machine-btn:hover{border-color:var(--red);color:var(--red)}
+
+@media print{.no-print,.logo-area{display:none!important}.page{padding:0!important}body{background:#fff}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <video autoplay muted loop playsinline><source src="sml-animation.mp4" type="video/mp4"></video>
+    <h3>Quotation Tool</h3>
+    <div class="login-field"><label>Email</label>
+      <input type="email" id="login-email" placeholder="your.name@sml.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label>
+      <input type="password" id="login-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- APP WRAPPER -->
+<div class="app-wrap" id="app-wrap">
+
+<!-- ANIMATED LOGO -->
+<div class="logo-area no-print" onclick="resetAll()" title="Click to reset">
+  <video autoplay muted loop playsinline><source src="sml-animation.mp4" type="video/mp4"></video>
+  <div class="logo-title">Quotation Tool</div>
+</div>
+
+<div class="topbar-user-info no-print" id="topbar-user-info"></div>
+<button class="topbar-logout-btn no-print" onclick="doLogout()">Logout</button>
+<button class="topbar-settings-btn no-print" id="settings-btn" onclick="openSettings()" style="display:none">Settings</button>
+
+<!-- PAGE 1: CONFIGURATION -->
+<div class="page active" id="page-1">
+  <div class="page-sub">Select the country, product line and quotation type to continue.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:8px;">
+    <div>
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Country</div>
+      <select id="country-select" class="country-dropdown" onchange="selectCountry(this.value)">
+        <option value="">— Select —</option>
+      </select>
+    </div>
+    <div>
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Product Line</div>
+      <div class="tiles" style="display:flex;flex-direction:column;gap:8px;" id="tiles-line">
+        <div class="tile" data-group="line" data-val="Soft Line" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">Soft Line</div>
+        </div>
+        <div class="tile" data-group="line" data-val="RFID" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">RFID</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Quotation Type</div>
+      <div class="tiles" style="display:flex;flex-direction:column;gap:8px;" id="tiles-type">
+        <div class="tile" data-group="type" data-val="HT" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">HT — Hang Tag</div>
+        </div>
+        <div class="tile" data-group="type" data-val="PFL" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">PFL — Printed Fabric Label</div>
+        </div>
+        <div class="tile" data-group="type" data-val="TTR" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">TTR — Roll Form</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="err" id="err-1">Please select a country, product line and quotation type to continue.</div>
+</div>
+
+<!-- PAGE 2: QUOTATION DETAILS -->
+<div class="page" id="page-2">
+  <div class="page-title">Quotation Details</div>
+  <div class="page-sub" id="page2-sub">Fill in product specs, material, machines and quantities.</div>
+  <div class="s3-wrap">
+    <div>
+      <!-- CUSTOMER & PRODUCT -->
+      <div class="card">
+        <div class="card-head"><h3>Customer &amp; Product</h3><span class="card-tag">General Info</span></div>
+        <div class="card-body">
+          <div class="fg fg-3">
+            <div class="f"><label>Customer <span class="req">*</span></label>
+              <select id="f-customer"><option value="">-- Select --</option>
+              <option>Adidas</option><option>Nike</option><option>H&amp;M</option><option>Zara / Inditex</option>
+              <option>Mango</option><option>Primark</option><option>PVH Corp</option><option>Levi's</option>
+              <option>Puma</option><option>Under Armour</option><option>Other</option></select></div>
+            <div class="f"><label>Product Code <span class="req">*</span></label>
+              <input type="text" id="f-code" placeholder="e.g. HT-2024-001"></div>
+            <div class="f"><label>Call Out / Description</label>
+              <input type="text" id="f-callout" placeholder="e.g. Main label black print"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCT IMAGE -->
+      <div class="card">
+        <div class="card-head"><h3>Product Image</h3><span class="card-tag">Optional</span></div>
+        <div class="card-body" style="display:flex;gap:16px;align-items:start">
+          <div class="img-upload-area" id="img-upload" onclick="document.getElementById('img-input').click()">
+            <div class="placeholder" id="img-placeholder">Click to upload image<br><span style="font-size:.6rem;color:#ccc">JPG, PNG (max 2MB)</span></div>
+            <img id="img-preview" style="display:none">
+          </div>
+          <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+          <button class="btn btn-ghost" style="font-size:.65rem;padding:6px 12px" id="img-clear-btn" onclick="clearImage()" style="display:none">Clear</button>
+        </div>
+      </div>
+
+      <!-- HT: RAW MATERIAL -->
+      <div class="card ht-only" id="card-ht-material">
+        <div class="card-head"><h3>Raw Material</h3><span class="card-tag">Paper / Substrate</span></div>
+        <div class="card-body">
+          <div class="fg fg-3">
+            <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
+              <input type="text" id="f-mat-ref" placeholder="e.g. FSC32596X76WHMBNTR"></div>
+            <div class="f"><label>GSM (grams/m2)</label>
+              <div class="input-unit"><input type="number" id="f-gsm" value="325" min="1" oninput="recalcAll()"><span class="unit">gsm</span></div></div>
+            <div class="f"><label>Cost / Sheet <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="f-mat-cost" placeholder="0.37" step="0.001" min="0" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>FRT (Freight incl.?)</label>
+              <select id="f-mat-frt"><option value="yes">Yes</option><option value="no">No</option></select></div>
+            <div class="f"><label>Material % of sheet</label>
+              <div class="input-unit"><input type="number" id="f-mat-pct" value="100" min="1" max="100" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PFL: RAW MATERIAL -->
+      <div class="card pfl-only" id="card-pfl-material">
+        <div class="card-head"><h3>Material</h3><span class="card-tag">Fabric / Substrate</span></div>
+        <div class="card-body">
+          <div class="fg fg-3">
+            <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
+              <input type="text" id="pf-mat-ref" placeholder="e.g. Etilabel satin"></div>
+            <div class="f"><label>Cost / Unit <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="pf-mat-cost" placeholder="0.0076" step="0.0001" min="0" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Material Waste %</label>
+              <div class="input-unit"><input type="number" id="pf-mat-waste" value="1" min="0" max="100" step="0.1" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HT: LABEL SIZE & INKS -->
+      <div class="card ht-only" id="card-ht-label">
+        <div class="card-head"><h3>Label Size &amp; Inks</h3><span class="card-tag">Product dimensions</span></div>
+        <div class="card-body">
+          <div class="fg fg-4">
+            <div class="f"><label>Width (mm) <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="f-width" placeholder="60" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+            <div class="f"><label>Length (mm) <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="f-length" placeholder="75" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+            <div class="f"><label>Front Inks <span class="req">*</span></label>
+              <input type="number" id="f-front-inks" placeholder="1" min="0" max="8" oninput="recalcAll()"></div>
+            <div class="f"><label>Back Inks</label>
+              <input type="number" id="f-back-inks" placeholder="0" min="0" max="8" oninput="recalcAll()"></div>
+            <div class="f"><label>Variable Data Front</label>
+              <input type="number" id="f-vd-front" placeholder="0" min="0" max="8"></div>
+            <div class="f"><label>Variable Data Back</label>
+              <input type="number" id="f-vd-back" placeholder="0" min="0" max="8"></div>
+            <div class="f"><label>Label Weight (g)</label>
+              <input type="text" id="f-weight" class="calc" readonly></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HT: SHEET SIZES -->
+      <div class="card ht-only" id="card-ht-sheets">
+        <div class="card-head"><h3>Sheet Sizes</h3><span class="card-tag">Raw material / Printing format</span></div>
+        <div class="card-body">
+          <div class="sub-area">
+            <div class="sub-area-title">1 - Raw Material Sheet <span>cost per sheet applied here</span></div>
+            <div class="fg fg-4">
+              <div class="f"><label>Width (mm) <span class="req">*</span></label>
+                <div class="input-unit"><input type="number" id="f-raw-w" placeholder="960" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+              <div class="f"><label>Length (mm) <span class="req">*</span></label>
+                <div class="input-unit"><input type="number" id="f-raw-l" placeholder="760" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+            </div>
+          </div>
+          <div class="sub-area">
+            <div class="sub-area-title">2 - Printing Format <span>sheet fed into the press</span></div>
+            <div class="fg fg-4">
+              <div class="f"><label>Width (mm) <span class="req">*</span></label>
+                <div class="input-unit"><input type="number" id="f-sheet-w" placeholder="480" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+              <div class="f"><label>Length (mm) <span class="req">*</span></label>
+                <div class="input-unit"><input type="number" id="f-sheet-l" placeholder="380" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+              <div class="f"><label>Gap Row (mm)</label>
+                <input type="number" id="f-gap-r" value="5" min="0" oninput="recalcAll()"></div>
+              <div class="f"><label>Gap Col (mm)</label>
+                <input type="number" id="f-gap-c" value="5" min="0" oninput="recalcAll()"></div>
+            </div>
+          </div>
+          <div class="sub-area">
+            <div class="sub-area-title">3 - Calculated Layout <span>auto from sizes above</span></div>
+            <div class="fg fg-4">
+              <div class="f"><label>Formats / raw sheet</label><input type="text" id="f-sheet-parts" class="calc" readonly></div>
+              <div class="f"><label>Labels / format</label><input type="text" id="f-lpf" class="calc" readonly></div>
+              <div class="f"><label>Labels / raw sheet</label><input type="text" id="f-labels-per-raw" class="calc" readonly></div>
+              <div class="f"><label>Raw sheets / 1000</label><input type="text" id="f-raw-per-1000" class="calc" readonly></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PFL: LABEL SIZE -->
+      <div class="card pfl-only" id="card-pfl-label">
+        <div class="card-head"><h3>Label Size</h3><span class="card-tag">Dimensions &amp; layout</span></div>
+        <div class="card-body">
+          <div class="fg fg-4">
+            <div class="f"><label>Width (mm) <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="pf-width" placeholder="10" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+            <div class="f"><label>Length (mm) <span class="req">*</span></label>
+              <div class="input-unit"><input type="number" id="pf-length" placeholder="70" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+            <div class="f"><label>Units / Row <span class="req">*</span></label>
+              <input type="number" id="pf-upr" placeholder="3" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>Units / Column</label>
+              <input type="number" id="pf-upc" placeholder="4" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>Front Inks</label>
+              <input type="number" id="pf-front-inks" placeholder="1" min="0" max="8"></div>
+            <div class="f"><label>Back Inks</label>
+              <input type="number" id="pf-back-inks" placeholder="0" min="0" max="8"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HT: MACHINES -->
+      <div class="card ht-only" id="card-ht-machines">
+        <div class="card-head"><h3>Machines Used</h3><span class="card-tag">Tick to include</span></div>
+        <div class="card-body" style="padding:10px 16px">
+          <div class="mach-col-hdr ht-mach-hdr"><span></span><span>Machine</span><span>Setup</span><span>EUR/Unit</span><span>Sh.Setup</span></div>
+          <div class="machine-list" id="ht-machine-list"></div>
+        </div>
+      </div>
+
+      <!-- PFL: MACHINES -->
+      <div class="card pfl-only" id="card-pfl-machines">
+        <div class="card-head"><h3>Machines Used</h3><span class="card-tag">Tick to include - set front mult &amp; waste</span></div>
+        <div class="card-body" style="padding:10px 16px">
+          <div class="mach-col-hdr pfl-mach-hdr"><span></span><span>Machine</span><span>Setup</span><span>EUR/m</span><span>Front</span><span>Waste</span><span>m.Setup</span></div>
+          <div class="machine-list" id="pfl-machine-list"></div>
+        </div>
+      </div>
+
+      <!-- HT: OUTSOURCING -->
+      <div class="card ht-only" id="card-ht-outsourcing">
+        <div class="card-head"><h3>Outsourcing &amp; Overheads</h3><span class="card-tag">Fixed rates</span></div>
+        <div class="card-body">
+          <div class="fg fg-4">
+            <div class="f"><label>Offset Plates (back col.)</label>
+              <div class="input-unit"><input type="number" id="f-plates" value="9" step="0.01" oninput="recalcAll()"><span class="unit">EUR ea</span></div></div>
+            <div class="f"><label>Prod. Controller (EUR/min)</label>
+              <div class="input-unit"><input type="number" id="f-prod-ctrl" value="0.553" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Goods In (EUR/min)</label>
+              <div class="input-unit"><input type="number" id="f-goods-in" value="0.244" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Goods Out (EUR/min)</label>
+              <div class="input-unit"><input type="number" id="f-goods-out" value="0.256" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Prod. Ctrl Minutes</label>
+              <input type="number" id="f-pch" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Goods In Minutes</label>
+              <input type="number" id="f-gih" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Goods Out Minutes</label>
+              <input type="number" id="f-goh" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Extra Cost %</label>
+              <div class="input-unit"><input type="number" id="f-extra-pct" value="3" min="0" max="100" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PFL: FIXED COSTS -->
+      <div class="card pfl-only" id="card-pfl-fixed">
+        <div class="card-head"><h3>Fixed Costs</h3><span class="card-tag">Overhead staff</span></div>
+        <div class="card-body">
+          <div class="fg fg-4">
+            <div class="f"><label>Goods In (EUR/h)</label>
+              <div class="input-unit"><input type="number" id="pf-gi-rate" value="14.215" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Goods In Minutes</label>
+              <input type="number" id="pf-gi-min" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Goods Out (EUR/h)</label>
+              <div class="input-unit"><input type="number" id="pf-go-rate" value="14.926" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Goods Out Minutes</label>
+              <input type="number" id="pf-go-min" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Prod. Controller (EUR/h)</label>
+              <div class="input-unit"><input type="number" id="pf-pc-rate" value="32.298" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Prod. Ctrl Minutes</label>
+              <input type="number" id="pf-pc-min" value="5" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Extra Cost %</label>
+              <div class="input-unit"><input type="number" id="pf-extra-pct" value="3" min="0" max="100" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PFL: TOOLING -->
+      <div class="card pfl-only" id="card-pfl-tooling">
+        <div class="card-head"><h3>Tooling</h3><span class="card-tag">Plates &amp; screens</span></div>
+        <div class="card-body">
+          <div class="fg fg-4">
+            <div class="f"><label>Flexo Plates (qty)</label>
+              <input type="number" id="pf-flexo-qty" value="0" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Flexo Cost/cm2</label>
+              <div class="input-unit"><input type="number" id="pf-flexo-cm2" value="0.025" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+            <div class="f"><label>Screen Qty</label>
+              <input type="number" id="pf-screen-qty" value="0" min="0" oninput="recalcAll()"></div>
+            <div class="f"><label>Screen Unit Cost</label>
+              <div class="input-unit"><input type="number" id="pf-screen-cost" value="25" step="0.01" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUANTITIES & GP (SHARED) -->
+      <div class="card">
+        <div class="card-head"><h3>Quantities &amp; Gross Profit</h3><span class="card-tag">Up to 4 scenarios</span></div>
+        <div class="card-body">
+          <div class="fg fg-5">
+            <div class="f"><label>Qty A <span class="req">*</span></label>
+              <input type="number" id="f-qa" placeholder="1000" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>Qty B</label>
+              <input type="number" id="f-qb" placeholder="2000" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>Qty C</label>
+              <input type="number" id="f-qc" placeholder="5000" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>Qty D</label>
+              <input type="number" id="f-qd" placeholder="10000" min="1" oninput="recalcAll()"></div>
+            <div class="f"><label>GP Target %</label>
+              <div class="input-unit"><input type="number" id="f-gp" value="40" min="0" max="99" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE COST TABLE -->
+      <div class="card" id="cost-card">
+        <div class="card-head"><h3>Cost Breakdown</h3><span class="card-tag">Live calculation</span></div>
+        <div class="card-body" style="padding:0;overflow:auto">
+          <div class="cost-outer">
+            <div class="cost-labels" id="cost-labels"></div>
+            <div class="cost-data" id="cost-data-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="err" id="err-2">Please fill in all required fields.</div>
+      <div class="btn-row no-print">
+        <button class="btn btn-ghost" onclick="goStep(1)">Back</button>
+        <button class="btn btn-success" onclick="goStep(3)">Generate Summary</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: TECHNICAL -->
+    <div>
+      <div class="tech-card">
+        <div class="tech-card-head">
+          <h3>Technical</h3>
+          <span class="card-tag" style="font-family:'Space Mono',monospace;font-size:.58rem;color:#666" id="tech-status">Fill dimensions</span>
+        </div>
+        <div class="tech-card-body" id="tech-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: SUMMARY -->
+<div class="page" id="page-3">
+  <div class="btn-row no-print" style="margin-bottom:20px">
+    <button class="btn btn-ghost" onclick="goStep(2)">Edit</button>
+    <button class="btn btn-print" id="pdf-btn" onclick="generatePDF()">Generate PDF</button>
+  </div>
+  <div class="print-wrap" id="print-area">
+    <div class="print-header">
+      <div class="print-header-left">
+        <div class="app-badge">QUO</div>
+        <div>
+          <div style="font-size:.62rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#666;margin-bottom:3px">Quotation</div>
+          <h2 id="p-title">--</h2>
+        </div>
+      </div>
+      <div class="meta" id="p-meta">--</div>
+    </div>
+    <div class="print-body" id="print-body"></div>
+  </div>
+</div>
+
+</div><!-- /app-wrap -->
+
+<!-- SETTINGS OVERLAY -->
+<div class="settings-overlay" id="settings-overlay">
+  <div class="settings-panel">
+    <button class="settings-close-btn" onclick="closeSettings()">Close</button>
+    <div class="settings-logo">
+      <video autoplay muted loop playsinline><source src="sml-animation.mp4" type="video/mp4"></video>
+      <div class="logo-title">Settings</div>
+    </div>
+    <div class="settings-tabs" id="settings-tabs-bar">
+      <div class="settings-tab active" onclick="switchSettingsTab('tab-hours',this)">Working Hours</div>
+      <div class="settings-tab" onclick="switchSettingsTab('tab-ht-machines',this)">HT Machines</div>
+      <div class="settings-tab" onclick="switchSettingsTab('tab-pfl-machines',this)">PFL Machines</div>
+      <div class="settings-tab" id="tab-admin-btn" onclick="switchSettingsTab('tab-admin',this)" style="display:none">Admin</div>
+    </div>
+    <div class="settings-body">
+      <div class="settings-section active" id="tab-hours">
+        <div class="settings-save-row">
+          <p>Working hours per country for machine cost calculations.</p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="save-ok" id="hours-saved">Saved</span>
+            <button class="btn btn-dark" onclick="addCountryRow()">+ Add Country</button>
+            <button class="btn btn-primary" onclick="saveHours()">Save Hours</button>
+          </div>
+        </div>
+        <table class="cfg-table" id="hours-table">
+          <thead><tr><th style="width:28%;padding-left:75px">Country</th><th class="r" style="width:16%;padding-right:115px">Hours/Year</th><th class="r" style="width:16%;padding-right:115px">Hours/Day</th><th class="r" style="width:16%;padding-right:115px">Days/Year</th><th class="r" style="width:14%;padding-right:115px">Shifts</th><th style="width:40px"></th></tr></thead>
+          <tbody id="hours-tbody"></tbody>
+        </table>
+      </div>
+      <div class="settings-section" id="tab-ht-machines">
+        <div class="settings-save-row">
+          <div style="display:flex;align-items:center;gap:12px">
+            <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label)">Country:</label>
+            <select id="settings-ht-country" class="country-dropdown" style="font-size:.82rem;padding:8px 34px 8px 12px;width:auto;min-width:160px" onchange="switchMachineCountry('ht',this.value)"></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="save-ok" id="ht-machines-saved">Saved</span>
+            <button class="btn btn-dark" onclick="addMachineCard('ht')">+ Add Machine</button>
+            <button class="btn btn-dark" style="background:#1a5276;border-color:#1a5276" onclick="replicateMachines('ht')">Replicate Speed/Setup</button>
+            <button class="btn btn-primary" onclick="saveMachines('ht')">Save &amp; Apply</button>
+          </div>
+        </div>
+        <div class="mach-cfg-grid" id="ht-mach-cfg-grid"></div>
+      </div>
+      <div class="settings-section" id="tab-pfl-machines">
+        <div class="settings-save-row">
+          <div style="display:flex;align-items:center;gap:12px">
+            <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label)">Country:</label>
+            <select id="settings-pfl-country" class="country-dropdown" style="font-size:.82rem;padding:8px 34px 8px 12px;width:auto;min-width:160px" onchange="switchMachineCountry('pfl',this.value)"></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="save-ok" id="pfl-machines-saved">Saved</span>
+            <button class="btn btn-dark" onclick="addMachineCard('pfl')">+ Add Machine</button>
+            <button class="btn btn-dark" style="background:#1a5276;border-color:#1a5276" onclick="replicateMachines('pfl')">Replicate Speed/Setup</button>
+            <button class="btn btn-primary" onclick="saveMachines('pfl')">Save &amp; Apply</button>
+          </div>
+        </div>
+        <div class="mach-cfg-grid" id="pfl-mach-cfg-grid"></div>
+      </div>
+      <!-- ADMIN SECTION -->
+      <div class="settings-section" id="tab-admin">
+        <div class="settings-save-row">
+          <p>Manage users, roles and country access.</p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="save-ok" id="admin-saved">Saved</span>
+            <button class="btn btn-dark" onclick="addUserRow()">+ Add User</button>
+            <button class="btn btn-primary" onclick="saveUsers()">Save Users</button>
+          </div>
+        </div>
+        <table class="admin-table" id="admin-users-table">
+          <thead><tr><th style="width:30%">Email</th><th style="width:20%">Password</th><th style="width:20%">Role</th><th style="width:22%">Country</th><th style="width:40px"></th></tr></thead>
+          <tbody id="admin-users-tbody"></tbody>
+        </table>
+        <div style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px;margin-top:12px">
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--label);margin-bottom:8px">Role Descriptions</div>
+          <div style="font-size:.72rem;color:var(--label);line-height:1.8">
+            <strong style="color:var(--dark)">Admin</strong> — Full access: all countries, settings, user management<br>
+            <strong style="color:var(--dark)">Site Supervisor</strong> — Settings access for assigned country + quotation tool<br>
+            <strong style="color:var(--dark)">Quo User</strong> — Quotation tool only, machines from assigned country
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// MACHINE DATA
+// ══════════════════════════════════════════════════════════
+let HT_MACHINES = [
+  {name:"GUILLOTINE PG",setup:2.9964,oneHit:0.001665,sheetsSetup:0},
+  {name:"OFFSET SM 74 PG",setup:11.0783,oneHit:0.007034,sheetsSetup:100},
+  {name:"GTO OFFSET 52 PG",setup:6.1063,oneHit:0.006785,sheetsSetup:50},
+  {name:"HORIZON PG",setup:6.5640,oneHit:0.007293,sheetsSetup:5},
+  {name:"KONICA PG",setup:1.6116,oneHit:0.014326,sheetsSetup:5},
+  {name:"DIE CUTTING PG CYLINDER",setup:5.9586,oneHit:0.013241,sheetsSetup:30},
+  {name:"DIE CUTTING PG PLANA",setup:8.4513,oneHit:0.037562,sheetsSetup:30},
+  {name:"OKI PG",setup:4.9281,oneHit:0.036505,sheetsSetup:0},
+  {name:"CLS 526 INKJET PG",setup:6.7305,oneHit:0.002991,sheetsSetup:10},
+  {name:"KETAN INLAY APPLICATION PG",setup:14.3834,oneHit:0.021309,sheetsSetup:0},
+  {name:"MACSA SANDWICH 50MM PG",setup:4.5718,oneHit:0.002117,sheetsSetup:0},
+  {name:"UD PACK SOLO APLICA DRY PEEL PG",setup:4.1948,oneHit:0.003729,sheetsSetup:0},
+  {name:"UD PACK CLS RFID CODIFICA PG",setup:4.2719,oneHit:0.007195,sheetsSetup:0},
+  {name:"WAN ZHI DP PRINT & APPLY PG",setup:6.1299,oneHit:0.004087,sheetsSetup:50},
+  {name:"ZHILIAN INKJET PRINTED",setup:5.7710,oneHit:0.002565,sheetsSetup:5},
+  {name:"ZHILIAN SIM-206H (3 PRINT DP)",setup:14.9785,oneHit:0.003329,sheetsSetup:0},
+  {name:"SMARTCLOTH DEVICE",setup:29.5631,oneHit:0.009854,sheetsSetup:100},
+  {name:"ROBOT DE CORTE PG",setup:2.7029,oneHit:1.013586,sheetsSetup:5},
+  {name:"ZEBRA + CUT + E&QC CLS 524H",setup:6.2921,oneHit:0.003356,sheetsSetup:0},
+  {name:"DESTROQUELAR",setup:0,oneHit:0.0011,sheetsSetup:0},
+];
+
+let PFL_MACHINES = [
+  {name:"FLEXO PG",setup:9.3542,oneHit:0.029696,metersSetup:20},
+  {name:"CDS OFFSET PG 3+1 4+1",setup:9.3542,oneHit:0.025984,metersSetup:20},
+  {name:'MERCURY 4&5" 2+1 PG',setup:4.7546,oneHit:0.052829,metersSetup:1},
+  {name:"WILLY CUT & FOLD PG",setup:8.3442,oneHit:0.041206,metersSetup:2},
+  {name:"ULTRASONIC IMPAK CUT PG",setup:1.4707,oneHit:0.028419,metersSetup:3},
+  {name:"JING DA HOT/COLD CUT PG",setup:2.7791,oneHit:0.074110,metersSetup:2},
+  {name:"NOVEX PG",setup:1.7785,oneHit:0.049403,metersSetup:2},
+  {name:"UD PACK CLS CODIFICACION ROLLO PG",setup:2.9664,oneHit:0.056504,metersSetup:1},
+  {name:"RC ULTRASONIC CUT & FOLD PG",setup:2.9185,oneHit:0.023584,metersSetup:5},
+  {name:"MACSA PRINT & APPLY PG",setup:4.6861,oneHit:0.063112,metersSetup:5},
+  {name:"CAB 1+1 PG",setup:2.9185,oneHit:0.108092,metersSetup:5},
+  {name:"ZHILIAN RCL 601 INKJET ROLL FORM",setup:4.8259,oneHit:0.016086,metersSetup:10},
+  {name:"NOVEX + UD PACK CLS COD. ROLLO",setup:5.1666,oneHit:0.061508,metersSetup:2},
+  {name:"UD PACK SANDWICH",setup:4.2921,oneHit:0.036881,metersSetup:0},
+  {name:"ZHILIAN PFL INKJET 2+1 ROLL FORM",setup:10.3828,oneHit:0.030764,metersSetup:10},
+  {name:"ULTRASONIC CUT SIN PERSONAL",setup:0.3533,oneHit:0.006826,metersSetup:3},
+  {name:"ZHILIAN PFL PRIMER APLICATOR",setup:0.0432,oneHit:0.000360,metersSetup:1},
+  {name:"SERIGRAFIA ROLL FORM PG",setup:9.0809,oneHit:0.096863,metersSetup:10},
+  {name:"ZHILIAN 601 INKJET & RFID ROLL FORM",setup:5.1297,oneHit:0.042748,metersSetup:10},
+  {name:"ZEBRA PG",setup:2.9738,oneHit:0.099125,metersSetup:1},
+  {name:"WingSing Inlay + WingSing cut&fold",setup:16.1629,oneHit:0.070657,metersSetup:8},
+  {name:"DIVISION CINTA TEJIDA PG",setup:4.4188,oneHit:0.029756,metersSetup:3},
+];
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS CONFIG DATA
+// ══════════════════════════════════════════════════════════
+let hoursData = [
+  {country:'Portugal',hoursYear:1824,hoursDay:8,shifts:1},
+  {country:'Spain',hoursYear:1800,hoursDay:8,shifts:1},
+  {country:'UK',hoursYear:1760,hoursDay:8,shifts:1},
+];
+
+let htMachinesConfig = [
+  {name:'GUILLOTINE PG',nomSpeed:12000,efficiency:90,accountVal:27500,roiYears:8,maintAnnual:500,setupTime:10,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'OFFSET SM 74 PG',nomSpeed:3500,efficiency:90,accountVal:70000,roiYears:8,maintAnnual:2000,setupTime:30,sheetsSetup:100,empCost:27766,socialPct:0,extraTime:0},
+  {name:'GTO OFFSET 52 PG',nomSpeed:3000,efficiency:90,accountVal:22000,roiYears:8,maintAnnual:1000,setupTime:20,sheetsSetup:50,empCost:27766,socialPct:0,extraTime:0},
+  {name:'HORIZON PG',nomSpeed:3000,efficiency:90,accountVal:50500,roiYears:8,maintAnnual:750,setupTime:20,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'KONICA PG',nomSpeed:1500,efficiency:90,accountVal:6420,roiYears:1,maintAnnual:0,setupTime:5,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DIE CUTTING PG CYLINDER',nomSpeed:1500,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:20,sheetsSetup:30,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DIE CUTTING PG PLANA',nomSpeed:500,efficiency:90,accountVal:13800,roiYears:8,maintAnnual:250,setupTime:30,sheetsSetup:30,empCost:26958,socialPct:0,extraTime:0},
+  {name:'OKI PG',nomSpeed:600,efficiency:90,accountVal:7000,roiYears:1,maintAnnual:100,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'CLS 526 INKJET PG',nomSpeed:10000,efficiency:90,accountVal:90000,roiYears:8,maintAnnual:9000,setupTime:15,sheetsSetup:10,empCost:26958,socialPct:0,extraTime:0},
+  {name:'KETAN INLAY APPLICATION PG',nomSpeed:1000,efficiency:90,accountVal:41000,roiYears:8,maintAnnual:1000,setupTime:45,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'MACSA SANDWICH 50MM PG',nomSpeed:9600,efficiency:90,accountVal:30000,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'UD PACK SOLO APLICA DRY PEEL PG',nomSpeed:5000,efficiency:90,accountVal:8000,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'UD PACK CLS RFID CODIFICA PG',nomSpeed:2500,efficiency:95,accountVal:12500,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'WAN ZHI DP PRINT & APPLY PG',nomSpeed:5000,efficiency:90,accountVal:21500,roiYears:8,maintAnnual:2000,setupTime:20,sheetsSetup:50,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZHILIAN INKJET PRINTED',nomSpeed:10000,efficiency:90,accountVal:50000,roiYears:8,maintAnnual:7000,setupTime:15,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZHILIAN SIM-206H (3 PRINT DP)',nomSpeed:15000,efficiency:90,accountVal:121192,roiYears:8,maintAnnual:11000,setupTime:20,sheetsSetup:0,empCost:53916,socialPct:0,extraTime:0},
+  {name:'SMARTCLOTH DEVICE',nomSpeed:5000,efficiency:80,accountVal:500000,roiYears:10,maintAnnual:2000,setupTime:45,sheetsSetup:100,empCost:18000,socialPct:0,extraTime:0},
+  {name:'ROBOT DE CORTE PG',nomSpeed:20,efficiency:80,accountVal:5000,roiYears:8,maintAnnual:100,setupTime:10,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZEBRA + CUT + E&QC CLS 524H',nomSpeed:6250,efficiency:90,accountVal:32600,roiYears:8,maintAnnual:1500,setupTime:20,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DESTROQUELAR',nomSpeed:0,efficiency:100,accountVal:0,roiYears:1,maintAnnual:0,setupTime:0,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+];
+
+let pflMachinesConfig = [
+  {name:'FLEXO PG',nomSpeed:700,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:30,metersSetup:20,empCost:22438,socialPct:23.75,extraTime:8.87},
+  {name:'CDS OFFSET PG 3+1 4+1',nomSpeed:800,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:30,metersSetup:20,empCost:22438,socialPct:23.75,extraTime:8.87},
+  {name:'MERCURY 4&5" 2+1 PG',nomSpeed:400,efficiency:90,accountVal:21000,roiYears:8,maintAnnual:2500,setupTime:15,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'WILLY CUT & FOLD PG',nomSpeed:450,efficiency:90,accountVal:5000,roiYears:8,maintAnnual:250,setupTime:30,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ULTRASONIC IMPAK CUT PG',nomSpeed:690,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:750,setupTime:5,metersSetup:3,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'JING DA HOT/COLD CUT PG',nomSpeed:250,efficiency:90,accountVal:3600,roiYears:8,maintAnnual:400,setupTime:10,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'NOVEX PG',nomSpeed:400,efficiency:90,accountVal:3000,roiYears:8,maintAnnual:2500,setupTime:6,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'UD PACK CLS CODIFICACION ROLLO PG',nomSpeed:350,efficiency:90,accountVal:15200,roiYears:8,maintAnnual:1000,setupTime:10,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'RC ULTRASONIC CUT & FOLD PG',nomSpeed:825,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:500,setupTime:10,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'MACSA PRINT & APPLY PG',nomSpeed:330,efficiency:90,accountVal:25000,roiYears:8,maintAnnual:1500,setupTime:15,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'CAB 1+1 PG',nomSpeed:180,efficiency:90,accountVal:3000,roiYears:8,maintAnnual:2000,setupTime:10,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN RCL 601 INKJET ROLL FORM',nomSpeed:2400,efficiency:75,accountVal:66000,roiYears:8,maintAnnual:15000,setupTime:10,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'NOVEX + UD PACK CLS COD. ROLLO',nomSpeed:350,efficiency:90,accountVal:18200,roiYears:8,maintAnnual:3500,setupTime:16,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'UD PACK SANDWICH',nomSpeed:490,efficiency:95,accountVal:8000,roiYears:8,maintAnnual:750,setupTime:15,metersSetup:0,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN PFL INKJET 2+1 ROLL FORM',nomSpeed:1125,efficiency:90,accountVal:98000,roiYears:8,maintAnnual:15000,setupTime:20,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ULTRASONIC CUT SIN PERSONAL',nomSpeed:690,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:3250,setupTime:5,metersSetup:3,empCost:0,socialPct:0,extraTime:8.87},
+  {name:'ZHILIAN PFL PRIMER APLICATOR',nomSpeed:8000,efficiency:90,accountVal:13000,roiYears:8,maintAnnual:500,setupTime:1,metersSetup:1,empCost:0,socialPct:0,extraTime:8.87},
+  {name:'SERIGRAFIA ROLL FORM PG',nomSpeed:250,efficiency:75,accountVal:12500,roiYears:8,maintAnnual:2000,setupTime:30,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN 601 INKJET & RFID ROLL FORM',nomSpeed:1000,efficiency:72,accountVal:92600,roiYears:8,maintAnnual:15000,setupTime:10,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZEBRA PG',nomSpeed:200,efficiency:90,accountVal:4800,roiYears:10,maintAnnual:2500,setupTime:10,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'WingSing Inlay + WingSing cut&fold',nomSpeed:305,efficiency:90,accountVal:38500,roiYears:8,maintAnnual:1000,setupTime:50,metersSetup:8,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'DIVISION CINTA TEJIDA PG',nomSpeed:660,efficiency:90,accountVal:17400,roiYears:8,maintAnnual:500,setupTime:15,metersSetup:3,empCost:21784,socialPct:23.75,extraTime:8.87},
+];
+
+let ELEC = {annualCost:75900,nMachines:40};
+let WORKING_HOURS = 1824;
+
+// ══════════════════════════════════════════════════════════
+// USER MANAGEMENT & AUTH
+// ══════════════════════════════════════════════════════════
+let USERS = [
+  {email:'sito041971@gmail.com', password:'ASas1903&', role:'admin', country:''},
+];
+let currentUser = null;
+
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pwd=document.getElementById('login-password').value;
+  const user=USERS.find(u=>u.email.toLowerCase()===email && u.password===pwd);
+  if(!user){document.getElementById('login-err').textContent='Invalid email or password';return;}
+  currentUser=user;
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-wrap').classList.add('visible');
+  applyRoleUI();
+}
+
+function doLogout(){
+  currentUser=null;
+  document.getElementById('app-wrap').classList.remove('visible');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-email').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('login-err').textContent='';
+  resetAll();
+}
+
+function applyRoleUI(){
+  if(!currentUser)return;
+  const role=currentUser.role;
+  const country=currentUser.country;
+  // User info bar
+  const info=document.getElementById('topbar-user-info');
+  info.innerHTML=`<span>${currentUser.email}</span> | ${role==='admin'?'Admin':role==='supervisor'?'Site Supervisor':'Quo User'}${country?' | '+country:''}`;
+  // Settings button: admin and supervisor only
+  const sBtn=document.getElementById('settings-btn');
+  sBtn.style.display=(role==='admin'||role==='supervisor')?'':'none';
+  // Admin tab: admin only
+  const aBtn=document.getElementById('tab-admin-btn');
+  if(aBtn) aBtn.style.display=role==='admin'?'':'none';
+  // Country dropdown: lock to assigned country for non-admin
+  refreshCountryDropdowns();
+}
+
+// ══════════════════════════════════════════════════════════
+// COUNTRY DATA — each country stores its own config
+// ══════════════════════════════════════════════════════════
+const COUNTRY_DATA = {};
+let settingsCountryHT = '';
+let settingsCountryPFL = '';
+
+function initCountryData(){
+  hoursData.forEach(row=>{
+    if(!COUNTRY_DATA[row.country]){
+      COUNTRY_DATA[row.country]={
+        workingHours: row.hoursYear,
+        hoursDay: row.hoursDay,
+        shifts: row.shifts,
+        elec: {annualCost:75900, nMachines:40},
+        htMachines: JSON.parse(JSON.stringify(HT_MACHINES)),
+        pflMachines: JSON.parse(JSON.stringify(PFL_MACHINES)),
+        htMachinesConfig: JSON.parse(JSON.stringify(htMachinesConfig)),
+        pflMachinesConfig: JSON.parse(JSON.stringify(pflMachinesConfig)),
+      };
+    }
+  });
+  refreshCountryDropdowns();
+}
+
+function refreshCountryDropdowns(){
+  let countries=hoursData.map(r=>r.country);
+  // Non-admin users only see their own country
+  if(currentUser && currentUser.role!=='admin' && currentUser.country){
+    countries=countries.filter(c=>c===currentUser.country);
+  }
+  const mainSel=document.getElementById('country-select');
+  if(mainSel){
+    const prev=mainSel.value;
+    mainSel.innerHTML='<option value="">-- Select --</option>';
+    countries.forEach(c=>{mainSel.innerHTML+=`<option value="${c}"${c===prev?' selected':''}>${c}</option>`;});
+    // If only one country, auto-select
+    if(countries.length===1){mainSel.value=countries[0];selectCountry(countries[0]);}
+  }
+  // Settings machine country dropdowns (admin sees all, supervisor sees own)
+  const settingsCountries=currentUser&&currentUser.role==='admin'?hoursData.map(r=>r.country):countries;
+  ['ht','pfl'].forEach(type=>{
+    const sel=document.getElementById('settings-'+type+'-country');
+    if(!sel)return;
+    const prevVal=sel.value;
+    sel.innerHTML='';
+    settingsCountries.forEach(c=>{sel.innerHTML+=`<option value="${c}"${c===prevVal?' selected':''}>${c}</option>`;});
+  });
+}
+
+function ensureCountryData(name){
+  if(!COUNTRY_DATA[name]){
+    COUNTRY_DATA[name]={
+      workingHours:1824, hoursDay:8, shifts:1,
+      elec:{annualCost:75900,nMachines:40},
+      htMachines:JSON.parse(JSON.stringify(HT_MACHINES)),
+      pflMachines:JSON.parse(JSON.stringify(PFL_MACHINES)),
+      htMachinesConfig:JSON.parse(JSON.stringify(htMachinesConfig)),
+      pflMachinesConfig:JSON.parse(JSON.stringify(pflMachinesConfig)),
+    };
+  }
+}
+
+function loadCountryForQuotation(name){
+  const d=COUNTRY_DATA[name];
+  if(!d) return;
+  WORKING_HOURS=d.workingHours;
+  ELEC=d.elec;
+  HT_MACHINES.length=0; d.htMachines.forEach(m=>HT_MACHINES.push(m));
+  PFL_MACHINES.length=0; d.pflMachines.forEach(m=>PFL_MACHINES.push(m));
+  htMachinesConfig.length=0; d.htMachinesConfig.forEach(m=>htMachinesConfig.push(m));
+  pflMachinesConfig.length=0; d.pflMachinesConfig.forEach(m=>pflMachinesConfig.push(m));
+}
+
+function selectCountry(name){
+  S.country=name||null;
+  if(name) loadCountryForQuotation(name);
+  if(S.country&&S.line&&S.type) setTimeout(()=>goStep(2),200);
+}
+
+function switchMachineCountry(type,country){
+  const prevCountry=type==='ht'?settingsCountryHT:settingsCountryPFL;
+  if(prevCountry && COUNTRY_DATA[prevCountry]){
+    const cfg=type==='ht'?htMachinesConfig:pflMachinesConfig;
+    const machines=type==='ht'?HT_MACHINES:PFL_MACHINES;
+    COUNTRY_DATA[prevCountry][type+'MachinesConfig']=JSON.parse(JSON.stringify(cfg));
+    COUNTRY_DATA[prevCountry][type+'Machines']=JSON.parse(JSON.stringify(machines));
+  }
+  if(type==='ht') settingsCountryHT=country; else settingsCountryPFL=country;
+  const d=COUNTRY_DATA[country];
+  if(!d) return;
+  WORKING_HOURS=d.workingHours; ELEC=d.elec;
+  if(type==='ht'){
+    htMachinesConfig.length=0; d.htMachinesConfig.forEach(m=>htMachinesConfig.push(m));
+    HT_MACHINES.length=0; d.htMachines.forEach(m=>HT_MACHINES.push(m));
+  } else {
+    pflMachinesConfig.length=0; d.pflMachinesConfig.forEach(m=>pflMachinesConfig.push(m));
+    PFL_MACHINES.length=0; d.pflMachines.forEach(m=>PFL_MACHINES.push(m));
+  }
+  renderMachineCards(type);
+}
+
+function replicateMachines(type){
+  const srcCountry=type==='ht'?settingsCountryHT:settingsCountryPFL;
+  if(!srcCountry){alert('Select a country first.');return;}
+  const srcCfg=COUNTRY_DATA[srcCountry][type+'MachinesConfig'];
+  const countries=hoursData.map(r=>r.country).filter(c=>c!==srcCountry);
+  if(!countries.length){alert('No other countries to replicate to.');return;}
+  if(!confirm(`Replicate Speed & Setup from ${srcCountry} to:\n${countries.join(', ')}?\n\nOnly speed/setup fields will be copied. Salary, devaluation, maintenance stay unchanged.`)) return;
+  const setupField=type==='ht'?'sheetsSetup':'metersSetup';
+  countries.forEach(c=>{
+    ensureCountryData(c);
+    const destCfg=COUNTRY_DATA[c][type+'MachinesConfig'];
+    srcCfg.forEach(srcM=>{
+      const destM=destCfg.find(d=>d.name===srcM.name);
+      if(destM){
+        destM.nomSpeed=srcM.nomSpeed;destM.efficiency=srcM.efficiency;
+        destM.setupTime=srcM.setupTime;destM[setupField]=srcM[setupField];
+      } else {
+        const newM=JSON.parse(JSON.stringify(srcM));
+        newM.empCost=0;newM.socialPct=0;newM.extraTime=0;
+        newM.accountVal=0;newM.roiYears=8;newM.maintAnnual=0;
+        destCfg.push(newM);
+      }
+    });
+    const hy=COUNTRY_DATA[c].workingHours,el=COUNTRY_DATA[c].elec;
+    COUNTRY_DATA[c][type+'Machines']=destCfg.map(m=>{
+      const rs=m.nomSpeed*(m.efficiency/100);
+      const ehr=(el.annualCost/hy)/el.nMachines;
+      const dhr=(m.accountVal/m.roiYears)/hy;
+      const mhr=m.maintAnnual/hy;
+      const emp=m.empCost*(1+(m.socialPct||0)/100)+((m.extraTime||0)*80);
+      const thr=dhr+emp/hy+ehr+mhr;
+      const entry={name:m.name,setup:(thr/60)*m.setupTime,oneHit:rs>0?thr/rs:0};
+      entry[setupField]=m[setupField];return entry;
+    });
+  });
+  alert('Speed & Setup replicated to '+countries.length+' countr'+(countries.length===1?'y':'ies')+'.');
+}
+
+// ══════════════════════════════════════════════════════════
+// ADMIN: USER TABLE
+// ══════════════════════════════════════════════════════════
+function renderUsersTable(){
+  const tbody=document.getElementById('admin-users-tbody');
+  if(!tbody)return;
+  const countries=hoursData.map(r=>r.country);
+  tbody.innerHTML='';
+  USERS.forEach((u,i)=>{
+    const countryOpts=countries.map(c=>`<option value="${c}"${u.country===c?' selected':''}>${c}</option>`).join('');
+    tbody.innerHTML+=`<tr>
+      <td><input value="${u.email}" style="width:100%" onchange="USERS[${i}].email=this.value"></td>
+      <td><input value="${u.password}" style="width:100%" onchange="USERS[${i}].password=this.value"></td>
+      <td><select onchange="USERS[${i}].role=this.value" style="width:100%">
+        <option value="admin"${u.role==='admin'?' selected':''}>Admin</option>
+        <option value="supervisor"${u.role==='supervisor'?' selected':''}>Site Supervisor</option>
+        <option value="quo_user"${u.role==='quo_user'?' selected':''}>Quo User</option>
+      </select></td>
+      <td><select onchange="USERS[${i}].country=this.value" style="width:100%">
+        <option value="">All</option>${countryOpts}
+      </select></td>
+      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1.2rem;font-weight:700;cursor:pointer;padding:4px 10px" onclick="USERS.splice(${i},1);renderUsersTable()">&#10005;</button></td>
+    </tr>`;
+  });
+}
+function addUserRow(){USERS.push({email:'user@sml.com',password:'123456',role:'quo_user',country:hoursData.length?hoursData[0].country:''});renderUsersTable();}
+function saveUsers(){flashSave('admin-saved');}
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+const S = {line:null, type:null, country:null};
+let tech = {};
+let productImageData = null;
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function goStep(n) {
+  if (n===2 && (!S.country || !S.line || !S.type)) { showErr('err-1'); return; }
+  if (n===2) applyTypeVisibility();
+  if (n===3) { if (!validateStep2()) return; buildSummary(); }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  for(let i=1;i<=3;i++){
+    const t=document.getElementById('pt-'+i),nm=document.getElementById('pn-'+i);
+    if(!t)continue; t.classList.remove('active','done');
+    if(i<n){t.classList.add('done');nm.textContent='\u2713';}
+    else if(i===n){t.classList.add('active');nm.textContent=i;}
+    else nm.textContent=i;
+  }
+  window.scrollTo(0,0);
+}
+
+function showErr(id){const e=document.getElementById(id);if(!e)return;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
+
+function selTile(tile){
+  const g=tile.dataset.group;
+  document.querySelectorAll(`[data-group="${g}"]`).forEach(t=>t.classList.remove('sel'));
+  tile.classList.add('sel');
+  S[g]=tile.dataset.val;
+  if(S.country&&S.line&&S.type) setTimeout(()=>goStep(2),200);
+}
+
+function applyTypeVisibility(){
+  const isHT = S.type==='HT';
+  const page2=document.getElementById('page-2');
+  page2.classList.remove('mode-ht','mode-pfl');
+  page2.classList.add(isHT?'mode-ht':'mode-pfl');
+  document.getElementById('page2-sub').textContent = isHT
+    ? 'HT Quotation: fill in label specs, sheet layout, machines and quantities.'
+    : 'PFL Quotation: fill in label specs, material, machines and quantities.';
+  buildMachineList();
+  renderCostLabels();
+  renderTechPanel();
+  recalcAll();
+}
+
+// ══════════════════════════════════════════════════════════
+// IMAGE UPLOAD
+// ══════════════════════════════════════════════════════════
+function handleImageUpload(input){
+  const file=input.files[0]; if(!file)return;
+  if(file.size>2*1024*1024){alert('Image too large (max 2MB)');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    productImageData=e.target.result;
+    const img=document.getElementById('img-preview');
+    img.src=productImageData; img.style.display='block';
+    document.getElementById('img-placeholder').style.display='none';
+    document.getElementById('img-upload').classList.add('has-img');
+    document.getElementById('img-clear-btn').style.display='';
+  };
+  reader.readAsDataURL(file);
+}
+function clearImage(){
+  productImageData=null;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-placeholder').style.display='';
+  document.getElementById('img-upload').classList.remove('has-img');
+  document.getElementById('img-input').value='';
+  document.getElementById('img-clear-btn').style.display='none';
+}
+
+// ══════════════════════════════════════════════════════════
+// MACHINE LIST RENDERING
+// ══════════════════════════════════════════════════════════
+function buildMachineList(){
+  const isHT=S.type==='HT';
+  const machines=isHT?HT_MACHINES:PFL_MACHINES;
+  const listId=isHT?'ht-machine-list':'pfl-machine-list';
+  const list=document.getElementById(listId);
+  if(!list)return;
+  list.innerHTML='';
+  machines.forEach((m,i)=>{
+    const row=document.createElement('div');
+    row.className='mach-item '+(isHT?'ht-mach-row':'pfl-mach-row');
+    row.id=(isHT?'hmi-':'pmi-')+i;
+    if(isHT){
+      row.innerHTML=`
+        <div class="mach-cb" id="hcb-${i}"></div>
+        <div class="mach-name">${m.name}</div>
+        <div class="mach-val">${m.setup.toFixed(4)}</div>
+        <div class="mach-val">${m.oneHit.toFixed(6)}</div>
+        <input class="mach-setup-inp" id="hsi-${i}" type="number" value="${m.sheetsSetup}" min="0" disabled onclick="event.stopPropagation()" oninput="recalcAll()">`;
+    } else {
+      row.innerHTML=`
+        <div class="mach-cb" id="pcb-${i}"></div>
+        <div class="mach-name">${m.name}</div>
+        <div class="mach-val">${m.setup.toFixed(2)}</div>
+        <div class="mach-val">${m.oneHit.toFixed(4)}</div>
+        <input class="mach-setup-inp" id="pfr-${i}" type="number" value="1" min="0" step="0.01" disabled onclick="event.stopPropagation()" oninput="recalcAll()" title="Front multiplier">
+        <input class="mach-setup-inp" id="pfw-${i}" type="number" value="5" min="0" step="0.1" disabled onclick="event.stopPropagation()" oninput="recalcAll()" title="Waste %">
+        <input class="mach-setup-inp" id="pfm-${i}" type="number" value="${m.metersSetup}" min="0" disabled onclick="event.stopPropagation()" oninput="recalcAll()" title="Meters setup">`;
+    }
+    row.onclick=()=>toggleMachine(isHT?'ht':'pfl',i);
+    list.appendChild(row);
+  });
+}
+
+function toggleMachine(type,i){
+  const pre=type==='ht'?'hmi':'pmi';
+  const row=document.getElementById(pre+'-'+i);
+  const checked=row.classList.toggle('checked');
+  if(type==='ht'){
+    document.getElementById('hsi-'+i).disabled=!checked;
+  } else {
+    document.getElementById('pfr-'+i).disabled=!checked;
+    document.getElementById('pfw-'+i).disabled=!checked;
+    document.getElementById('pfm-'+i).disabled=!checked;
+  }
+  recalcAll();
+}
+
+function getCheckedMachines(type){
+  const machines=type==='ht'?HT_MACHINES:PFL_MACHINES;
+  const pre=type==='ht'?'hmi':'pmi';
+  return machines.map((m,i)=>{
+    const row=document.getElementById(pre+'-'+i);
+    if(!row||!row.classList.contains('checked'))return null;
+    if(type==='ht'){
+      return{...m,sheetsSetup:parseInt(document.getElementById('hsi-'+i).value)||0,idx:i};
+    } else {
+      return{...m,
+        frontMult:parseFloat(document.getElementById('pfr-'+i).value)||1,
+        wastePct:parseFloat(document.getElementById('pfw-'+i).value)||0,
+        metersSetup:parseInt(document.getElementById('pfm-'+i).value)||0,
+        idx:i};
+    }
+  }).filter(Boolean);
+}
+
+// ══════════════════════════════════════════════════════════
+// TECH PANEL
+// ══════════════════════════════════════════════════════════
+function renderTechPanel(){
+  const body=document.getElementById('tech-body');
+  if(S.type==='HT'){
+    body.innerHTML=`
+      <div class="tech-section">Label Layout on Printing Format</div>
+      <div class="tech-row"><span class="tech-lbl">Pieces / row</span><span class="tech-val" id="t-prow">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Pieces / column</span><span class="tech-val" id="t-pcol">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Labels / printing format</span><span class="tech-val" id="t-pps">--</span></div>
+      <div class="tech-section">Raw Sheet Breakdown</div>
+      <div class="tech-row"><span class="tech-lbl">Formats / raw sheet</span><span class="tech-val" id="t-psms">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Gap row / col</span><span class="tech-val" id="t-gaps">--</span></div>
+      <div class="tech-section">Dimensions</div>
+      <div class="tech-row"><span class="tech-lbl">Label W x L</span><span class="tech-val" id="t-htw">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Raw sheet W x L</span><span class="tech-val" id="t-htl">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Print format W x L</span><span class="tech-val" id="t-psw">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Effective area W x L</span><span class="tech-val" id="t-psl">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Paper GSM</span><span class="tech-val" id="t-gsm">325</span></div>
+      <div class="tech-section">Inks &amp; Weight</div>
+      <div class="tech-row"><span class="tech-lbl">Front / Back inks</span><span class="tech-val" id="t-inks">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Label weight</span><span class="tech-val" id="t-wt">--</span></div>
+      <div class="tech-section">Paper Cost Preview</div>
+      <div class="tech-row"><span class="tech-lbl">Labels / raw sheet</span><span class="tech-val" id="t-sn">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Raw sheets / 1000</span><span class="tech-val" id="t-pc">--</span></div>`;
+  } else {
+    body.innerHTML=`
+      <div class="tech-section">Label</div>
+      <div class="tech-row"><span class="tech-lbl">Size W x L</span><span class="tech-val" id="t-plbl">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Units / row</span><span class="tech-val" id="t-pupr">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Units / column</span><span class="tech-val" id="t-pupc">--</span></div>
+      <div class="tech-section">Material</div>
+      <div class="tech-row"><span class="tech-lbl">Total meters (Qty A)</span><span class="tech-val" id="t-ptm">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Meters + waste</span><span class="tech-val" id="t-ptmw">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Material cost (Qty A)</span><span class="tech-val" id="t-pmc">--</span></div>
+      <div class="tech-section">Costs Preview (Qty A)</div>
+      <div class="tech-row"><span class="tech-lbl">Machine cost</span><span class="tech-val" id="t-pmach">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Fixed costs</span><span class="tech-val" id="t-pfix">--</span></div>
+      <div class="tech-row"><span class="tech-lbl">Tooling</span><span class="tech-val" id="t-ptool">--</span></div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// COST LABELS (left column of cost table)
+// ══════════════════════════════════════════════════════════
+function renderCostLabels(){
+  const el=document.getElementById('cost-labels');
+  const isHT=S.type==='HT';
+  const rows=isHT
+    ?['Paper cost','Machine cost','Outsourcing','Subtotal','+ Extra cost','Total EUR','Cost / unit','Cost / 1000','Sell price / unit','GP %']
+    :['Material','Machines','Fixed costs','Tooling','Subtotal','+ Extra cost','Total EUR','Cost / unit','Cost / 1000','Sell price / unit','GP %'];
+  el.innerHTML=`<div class="cost-col-head" style="background:transparent;color:#aaa;text-align:left;padding:8px 12px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Line Item</div>
+    <div class="cost-col-qty" style="background:transparent;color:transparent;padding:6px 12px;border-bottom:1px solid var(--border-light)">&nbsp;</div>`
+    +rows.map(r=>{
+      let cls='cost-row';
+      if(r.includes('Subtotal')||r.includes('Extra')||r.includes('Total'))cls+=' total-row';
+      if(r.includes('Sell'))cls+=' price-row';
+      if(r.includes('GP'))cls+=' gp-row';
+      return`<div class="${cls}"><div class="cost-lbl" style="font-size:.68rem;font-weight:600;color:var(--label)">${r}</div></div>`;
+    }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// RECALC ALL
+// ══════════════════════════════════════════════════════════
+function recalcAll(){
+  if(S.type==='HT') recalcHT();
+  else if(S.type==='PFL') recalcPFL();
+}
+
+// ══════════════════════════════════════════════════════════
+// HT CALCULATIONS
+// ══════════════════════════════════════════════════════════
+function recalcHT(){
+  const w=pf('f-width'),l=pf('f-length'),fi=pi('f-front-inks'),bi=pi('f-back-inks'),gsm=pf('f-gsm')||325;
+  const rawW=pf('f-raw-w'),rawL=pf('f-raw-l'),printW=pf('f-sheet-w'),printL=pf('f-sheet-l');
+  const gr=pf('f-gap-r')||5,gc=pf('f-gap-c')||5;
+  const ready=w&&l&&rawW&&rawL&&printW&&printL;
+  const st=document.getElementById('tech-status');
+  if(!ready){
+    st.textContent='Fill all sizes'; tech={};
+    ['f-sheet-parts','f-lpf','f-labels-per-raw','f-raw-per-1000','f-weight'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    return;
+  }
+  st.textContent='Auto-calculated';
+  const partsW=Math.floor(rawW/printW),partsL=Math.floor(rawL/printL),partsPerRaw=partsW*partsL;
+  const pRow=Math.floor(printW/(w+gc)),pCol=Math.floor(printL/(l+gr));
+  const labelsPerFormat=pRow*pCol,labelsPerRaw=labelsPerFormat*partsPerRaw;
+  const psw=pRow*(w+gc)-gc,psl=pCol*(l+gr)-gr;
+  const areaM2=(w/1000)*(l/1000),weight=+(areaM2*gsm).toFixed(4);
+  const rawPer1000=labelsPerRaw>0?Math.ceil(1000/labelsPerRaw):0;
+  tech={w,l,fi,bi,gsm,rawW,rawL,printW,printL,gr,gc,partsW,partsL,partsPerRaw,pRow,pCol,labelsPerFormat,labelsPerRaw,psw,psl,weight,rawPer1000};
+  // Update calc fields
+  sv('f-sheet-parts',partsPerRaw);sv('f-lpf',labelsPerFormat);sv('f-labels-per-raw',labelsPerRaw);sv('f-raw-per-1000',rawPer1000||'');sv('f-weight',weight?weight+' g':'');
+  // Update tech panel
+  set('t-prow',pRow);set('t-pcol',pCol);set('t-pps',labelsPerFormat);
+  set('t-psms',partsPerRaw+' ('+partsW+'x'+partsL+')');
+  set('t-gaps',gr+' / '+gc+' mm');
+  set('t-htw',w+'x'+l+' mm');set('t-htl',rawW+'x'+rawL+' mm');
+  set('t-psw',printW+'x'+printL+' mm');set('t-psl',psw+'x'+psl+' mm');
+  set('t-gsm',gsm);set('t-inks',(fi||0)+' / '+(bi||0));set('t-wt',weight+' g');
+  const matCost=pf('f-mat-cost');
+  if(labelsPerRaw>0){set('t-sn',labelsPerRaw);set('t-pc',rawPer1000+(matCost?' -> EUR'+(rawPer1000*matCost).toFixed(4):''));}
+  else{set('t-sn','--');set('t-pc','--');}
+  recalcHTCosts();
+}
+
+function recalcHTCosts(){
+  const qtys=['f-qa','f-qb','f-qc','f-qd'].map(id=>pi(id));
+  const matCost=pf('f-mat-cost'),matPct=pf('f-mat-pct')/100||1;
+  const extraPct=pf('f-extra-pct')/100||0.03,gpPct=pf('f-gp')/100||0.4;
+  const fi=pi('f-front-inks'),bi=pi('f-back-inks');
+  const platesUnit=pf('f-plates')||9;
+  const pcRate=pf('f-prod-ctrl')||0.553,giRate=pf('f-goods-in')||0.244,goRate=pf('f-goods-out')||0.256;
+  const pcMin=pf('f-pch')||5,giMin=pf('f-gih')||5,goMin=pf('f-goh')||5;
+  const pps=tech.labelsPerRaw||0;
+  const checkedMachines=getCheckedMachines('ht');
+  const results=qtys.map(qty=>{
+    if(!qty||!pps)return null;
+    const sheetsNeeded=Math.ceil(qty/pps);
+    const paperCost=sheetsNeeded*matCost*matPct;
+    let machineCost=0;
+    checkedMachines.forEach(m=>{
+      const inkMult=m.name.includes('OFFSET')?(fi>0?fi*1.15-0.15:1):1;
+      machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+    });
+    const platesTotal=platesUnit*bi;
+    const overhead=(pcRate*pcMin)+(giRate*giMin)+(goRate*goMin);
+    const outsourcing=platesTotal+overhead;
+    const subtotal=paperCost+machineCost+outsourcing;
+    const extraCost=subtotal*extraPct;
+    const totalCost=subtotal+extraCost;
+    const costPerUnit=totalCost/qty,costPer1000=costPerUnit*1000;
+    const sellPrice=costPerUnit/(1-gpPct);
+    const gpActual=((sellPrice-costPerUnit)/sellPrice)*100;
+    return{qty,paperCost,machineCost,outsourcing,subtotal,extraCost,totalCost,costPerUnit,costPer1000,sellPrice,gpActual};
+  });
+  renderHTCostGrid(results);
+}
+
+function renderHTCostGrid(results){
+  const grid=document.getElementById('cost-data-grid');
+  grid.innerHTML='';
+  ['A','B','C','D'].forEach((lbl,i)=>{
+    const r=results[i],col=document.createElement('div');
+    col.className='cost-col';
+    const v=n=>r?'EUR '+n.toFixed(2):'--';
+    const v5=n=>r?'EUR '+n.toFixed(5):'--';
+    col.innerHTML=`
+      <div class="cost-col-head">Qty ${lbl}</div>
+      <div class="cost-col-qty">${r?r.qty.toLocaleString():'--'}</div>
+      <div class="cost-row"><div class="cost-val">${v(r?.paperCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v(r?.machineCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v(r?.outsourcing)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val total">${v(r?.subtotal)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val">${v(r?.extraCost)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val total">${v(r?.totalCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v5(r?.costPerUnit)}</div></div>
+      <div class="cost-row"><div class="cost-val">${r?'EUR '+r.costPer1000.toFixed(3):'--'}</div></div>
+      <div class="cost-row price-row"><div class="cost-val price">${v5(r?.sellPrice)}</div></div>
+      <div class="cost-row gp-row"><div class="cost-val gp">${r?r.gpActual.toFixed(1)+'%':'--'}</div></div>`;
+    grid.appendChild(col);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// PFL CALCULATIONS
+// ══════════════════════════════════════════════════════════
+function recalcPFL(){
+  const w=pf('pf-width'),l=pf('pf-length'),upr=pi('pf-upr')||1,upc=pi('pf-upc')||1;
+  const st=document.getElementById('tech-status');
+  if(!w||!l){st.textContent='Fill dimensions';tech={};return;}
+  st.textContent='Auto-calculated';
+  const labelLenM=l/1000;
+  tech={w,l,upr,upc,labelLenM,type:'PFL'};
+  set('t-plbl',w+'x'+l+' mm');set('t-pupr',upr);set('t-pupc',upc);
+  recalcPFLCosts();
+}
+
+function recalcPFLCosts(){
+  const qtys=['f-qa','f-qb','f-qc','f-qd'].map(id=>pi(id));
+  const matCost=pf('pf-mat-cost')||0;
+  const matWaste=pf('pf-mat-waste')/100||0.01;
+  const extraPct=pf('pf-extra-pct')/100||0.03;
+  const gpPct=pf('f-gp')/100||0.4;
+  const giRate=pf('pf-gi-rate')||0,giMin=pf('pf-gi-min')||0;
+  const goRate=pf('pf-go-rate')||0,goMin=pf('pf-go-min')||0;
+  const pcRate=pf('pf-pc-rate')||0,pcMin=pf('pf-pc-min')||0;
+  const flexoQty=pi('pf-flexo-qty'),flexoCm2=pf('pf-flexo-cm2')||0.025;
+  const screenQty=pi('pf-screen-qty'),screenCost=pf('pf-screen-cost')||25;
+  const labelLenM=tech.labelLenM||0;
+  const checkedMachines=getCheckedMachines('pfl');
+  // Tooling calc
+  const wCm=(tech.w||0)/10,lCm=(tech.l||0)/10;
+  const plateCm2=wCm*(lCm*2)*1.1; // development = length*2, +10% waste
+  const plateCostEach=plateCm2*flexoCm2;
+  const toolingFlexo=plateCostEach*flexoQty;
+  const toolingScreen=screenQty*screenCost;
+  const toolingTotal=toolingFlexo+toolingScreen;
+  // Fixed costs
+  const fixedCosts=(giRate*giMin/60)+(goRate*goMin/60)+(pcRate*pcMin/60);
+
+  const results=qtys.map(qty=>{
+    if(!qty||!labelLenM)return null;
+    const totalMeters=qty*labelLenM;
+    const totalMetersWaste=totalMeters*(1+matWaste);
+    // Material
+    const materialCost=qty*(1+matWaste)*matCost;
+    // Machines
+    let machineCost=0;
+    checkedMachines.forEach(m=>{
+      const fm=m.frontMult||1;
+      const mw=m.wastePct/100||0;
+      machineCost+=(m.setup*fm)+(totalMetersWaste*(1+mw)*m.oneHit*fm);
+    });
+    const subtotal=materialCost+machineCost+fixedCosts+toolingTotal;
+    const extraCost=subtotal*extraPct;
+    const totalCost=subtotal+extraCost;
+    const costPerUnit=totalCost/qty,costPer1000=costPerUnit*1000;
+    const sellPrice=costPerUnit/(1-gpPct);
+    const gpActual=((sellPrice-costPerUnit)/sellPrice)*100;
+    return{qty,materialCost,machineCost,fixedCosts,toolingTotal,subtotal,extraCost,totalCost,costPerUnit,costPer1000,sellPrice,gpActual,totalMeters,totalMetersWaste};
+  });
+  // Update tech panel with Qty A data
+  const r0=results[0];
+  if(r0){
+    set('t-ptm',Math.round(r0.totalMeters).toLocaleString()+' m');
+    set('t-ptmw',Math.round(r0.totalMetersWaste).toLocaleString()+' m');
+    set('t-pmc','EUR '+r0.materialCost.toFixed(2));
+    set('t-pmach','EUR '+r0.machineCost.toFixed(2));
+    set('t-pfix','EUR '+fixedCosts.toFixed(2));
+    set('t-ptool','EUR '+toolingTotal.toFixed(2));
+  }
+  renderPFLCostGrid(results);
+}
+
+function renderPFLCostGrid(results){
+  const grid=document.getElementById('cost-data-grid');
+  grid.innerHTML='';
+  ['A','B','C','D'].forEach((lbl,i)=>{
+    const r=results[i],col=document.createElement('div');
+    col.className='cost-col';
+    const v=n=>r?'EUR '+n.toFixed(2):'--';
+    const v5=n=>r?'EUR '+n.toFixed(5):'--';
+    col.innerHTML=`
+      <div class="cost-col-head">Qty ${lbl}</div>
+      <div class="cost-col-qty">${r?r.qty.toLocaleString():'--'}</div>
+      <div class="cost-row"><div class="cost-val">${v(r?.materialCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v(r?.machineCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v(r?.fixedCosts)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v(r?.toolingTotal)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val total">${v(r?.subtotal)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val">${v(r?.extraCost)}</div></div>
+      <div class="cost-row total-row"><div class="cost-val total">${v(r?.totalCost)}</div></div>
+      <div class="cost-row"><div class="cost-val">${v5(r?.costPerUnit)}</div></div>
+      <div class="cost-row"><div class="cost-val">${r?'EUR '+r.costPer1000.toFixed(3):'--'}</div></div>
+      <div class="cost-row price-row"><div class="cost-val price">${v5(r?.sellPrice)}</div></div>
+      <div class="cost-row gp-row"><div class="cost-val gp">${r?r.gpActual.toFixed(1)+'%':'--'}</div></div>`;
+    grid.appendChild(col);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// VALIDATION
+// ══════════════════════════════════════════════════════════
+function validateStep2(){
+  const cust=document.getElementById('f-customer').value;
+  const code=document.getElementById('f-code').value.trim();
+  const qa=document.getElementById('f-qa').value;
+  if(!cust||!code||!qa){showErr('err-2');return false;}
+  if(S.type==='HT'){
+    const w=document.getElementById('f-width').value,l=document.getElementById('f-length').value;
+    const fi=document.getElementById('f-front-inks').value,mat=document.getElementById('f-mat-cost').value;
+    if(!w||!l||fi===''||!mat){showErr('err-2');return false;}
+  } else {
+    const w=document.getElementById('pf-width').value,l=document.getElementById('pf-length').value;
+    const mat=document.getElementById('pf-mat-cost').value;
+    if(!w||!l||!mat){showErr('err-2');return false;}
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
+// BUILD SUMMARY
+// ══════════════════════════════════════════════════════════
+function buildSummary(){
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const customer=gv('f-customer'),code=gv('f-code'),callout=gv('f-callout')||'--';
+  document.getElementById('p-title').textContent=code;
+  document.getElementById('p-meta').innerHTML=customer+'<br>'+dateStr+'<br>'+S.type+' | '+S.line;
+  const body=document.getElementById('print-body');
+  let html='<div class="print-2col"><div>';
+  // Product info
+  html+=sec('Product Information');
+  html+=pr('Customer',customer)+pr('Product Code',code)+pr('Call Out',callout);
+  html+=pr('Product Line',S.line)+pr('Quotation Type',S.type==='HT'?'Hang Tag (Sheet)':'Printed Fabric Label (Roll)');
+  if(S.type==='HT'){
+    html+=sec('Raw Material');
+    html+=pr('Reference',gv('f-mat-ref')||'--');
+    html+=pr('Cost / sheet','EUR '+parseFloat(gv('f-mat-cost')||0).toFixed(4));
+    html+=pr('GSM',gv('f-gsm')+' gsm');
+  } else {
+    html+=sec('Material');
+    html+=pr('Reference',gv('pf-mat-ref')||'--');
+    html+=pr('Cost / unit','EUR '+parseFloat(gv('pf-mat-cost')||0).toFixed(4));
+    html+=pr('Waste',gv('pf-mat-waste')+'%');
+  }
+  html+='</div><div>';
+  // Image + Technical
+  if(productImageData){
+    html+=sec('Product Image');
+    html+='<img src="'+productImageData+'" class="print-img" style="margin-bottom:12px"><br>';
+  }
+  html+=sec('Technical');
+  if(S.type==='HT'&&tech.w){
+    html+=pr('Label size',tech.w+'x'+tech.l+' mm');
+    html+=pr('Raw sheet',tech.rawW+'x'+tech.rawL+' mm');
+    html+=pr('Print format',tech.printW+'x'+tech.printL+' mm');
+    html+=pr('Formats / raw',tech.partsPerRaw+' ('+tech.partsW+'x'+tech.partsL+')');
+    html+=pr('Labels / format',tech.labelsPerFormat);
+    html+=pr('Labels / raw sheet',tech.labelsPerRaw);
+    html+=pr('Effective area',tech.psw+'x'+tech.psl+' mm');
+    html+=pr('Label weight',tech.weight+' g');
+    html+=pr('Front / Back inks',(tech.fi||0)+' / '+(tech.bi||0));
+  } else if(S.type==='PFL'&&tech.w){
+    html+=pr('Label size',tech.w+'x'+tech.l+' mm');
+    html+=pr('Units / row',tech.upr);
+    html+=pr('Units / column',tech.upc);
+    html+=pr('Front inks',gv('pf-front-inks')||'0');
+    html+=pr('Back inks',gv('pf-back-inks')||'0');
+  }
+  html+='</div></div>';
+  // Machines table
+  const mType=S.type==='HT'?'ht':'pfl';
+  const checkedMachines=getCheckedMachines(mType);
+  html+=sec('Machines Selected');
+  if(S.type==='HT'){
+    html+='<table class="print-table"><thead><tr><th>Machine</th><th class="r">Setup</th><th class="r">EUR/Unit</th><th class="r">Sh.Setup</th><th class="r">Front</th><th class="r">Back</th></tr></thead><tbody>';
+    if(!checkedMachines.length) html+='<tr><td colspan="6" style="color:#ccc;text-align:center">No machines selected</td></tr>';
+    else checkedMachines.forEach(m=>{
+      html+='<tr><td>'+m.name+'</td><td class="r">'+m.setup.toFixed(4)+'</td><td class="r">'+m.oneHit.toFixed(6)+'</td><td class="r">'+(m.sheetsSetup||'--')+'</td><td class="r">'+(tech.fi||0)+'</td><td class="r">'+(tech.bi||'--')+'</td></tr>';
+    });
+  } else {
+    html+='<table class="print-table"><thead><tr><th>Machine</th><th class="r">Setup</th><th class="r">EUR/m</th><th class="r">Front</th><th class="r">Waste%</th></tr></thead><tbody>';
+    if(!checkedMachines.length) html+='<tr><td colspan="5" style="color:#ccc;text-align:center">No machines selected</td></tr>';
+    else checkedMachines.forEach(m=>{
+      html+='<tr><td>'+m.name+'</td><td class="r">'+m.setup.toFixed(4)+'</td><td class="r">'+m.oneHit.toFixed(6)+'</td><td class="r">'+(m.frontMult||1)+'</td><td class="r">'+(m.wastePct||0)+'%</td></tr>';
+    });
+  }
+  html+='</tbody></table>';
+  // Pricing summary
+  html+=sec('Pricing Summary');
+  html+=buildPricingSummaryHTML();
+  body.innerHTML=html;
+}
+
+function buildPricingSummaryHTML(){
+  const qtys=['f-qa','f-qb','f-qc','f-qd'].map(id=>pi(id));
+  const gpPct=pf('f-gp')/100||0.4;
+  let h='<div class="pricing-summary-grid">';
+  qtys.forEach((qty,i)=>{
+    const lbl=['A','B','C','D'][i];
+    if(!qty){
+      h+=`<div class="psg-col na"><div class="psg-head">Qty ${lbl}</div><div class="psg-qty">--</div>
+        <div class="psg-row"><span class="psg-lbl">Total cost</span><span class="psg-val">--</span></div>
+        <div class="psg-row"><span class="psg-lbl">Cost / unit</span><span class="psg-val">--</span></div>
+        <div class="psg-row"><span class="psg-lbl">Sell / unit</span><span class="psg-val hi">--</span></div>
+        <div class="psg-row"><span class="psg-lbl">GP %</span><span class="psg-val gp">--</span></div></div>`;
+      return;
+    }
+    // Recalculate for this qty
+    let total,cpu,sell,gp;
+    if(S.type==='HT'){
+      const r=calcHTForQty(qty);
+      total=r.totalCost;cpu=r.costPerUnit;
+    } else {
+      const r=calcPFLForQty(qty);
+      total=r.totalCost;cpu=r.costPerUnit;
+    }
+    sell=cpu/(1-gpPct);gp=((sell-cpu)/sell*100).toFixed(1);
+    h+=`<div class="psg-col"><div class="psg-head">Qty ${lbl}</div><div class="psg-qty">${qty.toLocaleString()}</div>
+      <div class="psg-row"><span class="psg-lbl">Total cost</span><span class="psg-val">EUR ${total.toFixed(2)}</span></div>
+      <div class="psg-row"><span class="psg-lbl">Cost / unit</span><span class="psg-val">EUR ${cpu.toFixed(5)}</span></div>
+      <div class="psg-row"><span class="psg-lbl">Sell / unit</span><span class="psg-val hi">EUR ${sell.toFixed(5)}</span></div>
+      <div class="psg-row"><span class="psg-lbl">GP %</span><span class="psg-val gp">${gp}%</span></div></div>`;
+  });
+  h+='</div>';
+  return h;
+}
+
+function calcHTForQty(qty){
+  const matCost=pf('f-mat-cost'),matPct=pf('f-mat-pct')/100||1;
+  const extraPct=pf('f-extra-pct')/100||0.03;
+  const fi=pi('f-front-inks'),bi=pi('f-back-inks');
+  const platesUnit=pf('f-plates')||9;
+  const pcRate=pf('f-prod-ctrl')||0.553,giRate=pf('f-goods-in')||0.244,goRate=pf('f-goods-out')||0.256;
+  const pcMin=pf('f-pch')||5,giMin=pf('f-gih')||5,goMin=pf('f-goh')||5;
+  const pps=tech.labelsPerRaw||1;
+  const sheetsNeeded=Math.ceil(qty/pps);
+  const paperCost=sheetsNeeded*matCost*matPct;
+  let machineCost=0;
+  getCheckedMachines('ht').forEach(m=>{
+    const inkMult=m.name.includes('OFFSET')?(fi>0?fi*1.15-0.15:1):1;
+    machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+  });
+  const outsourcing=platesUnit*bi+(pcRate*pcMin)+(giRate*giMin)+(goRate*goMin);
+  const subtotal=paperCost+machineCost+outsourcing;
+  const totalCost=subtotal*(1+extraPct);
+  return{totalCost,costPerUnit:totalCost/qty};
+}
+
+function calcPFLForQty(qty){
+  const matCost=pf('pf-mat-cost')||0,matWaste=pf('pf-mat-waste')/100||0.01;
+  const extraPct=pf('pf-extra-pct')/100||0.03;
+  const giRate=pf('pf-gi-rate')||0,giMin=pf('pf-gi-min')||0;
+  const goRate=pf('pf-go-rate')||0,goMin=pf('pf-go-min')||0;
+  const pcRate=pf('pf-pc-rate')||0,pcMin=pf('pf-pc-min')||0;
+  const flexoQty=pi('pf-flexo-qty'),flexoCm2=pf('pf-flexo-cm2')||0.025;
+  const screenQty=pi('pf-screen-qty'),screenCost=pf('pf-screen-cost')||25;
+  const labelLenM=tech.labelLenM||0;
+  const wCm=(tech.w||0)/10,lCm=(tech.l||0)/10;
+  const plateCm2=wCm*(lCm*2)*1.1;
+  const toolingTotal=plateCm2*flexoCm2*flexoQty+screenQty*screenCost;
+  const fixedCosts=(giRate*giMin/60)+(goRate*goMin/60)+(pcRate*pcMin/60);
+  const totalMetersWaste=qty*labelLenM*(1+matWaste);
+  const materialCost=qty*(1+matWaste)*matCost;
+  let machineCost=0;
+  getCheckedMachines('pfl').forEach(m=>{
+    const fm=m.frontMult||1,mw=m.wastePct/100||0;
+    machineCost+=(m.setup*fm)+(totalMetersWaste*(1+mw)*m.oneHit*fm);
+  });
+  const subtotal=materialCost+machineCost+fixedCosts+toolingTotal;
+  const totalCost=subtotal*(1+extraPct);
+  return{totalCost,costPerUnit:totalCost/qty};
+}
+
+// ══════════════════════════════════════════════════════════
+// PDF GENERATION
+// ══════════════════════════════════════════════════════════
+async function generatePDF(){
+  const btn=document.getElementById('pdf-btn');
+  const orig=btn.textContent;btn.textContent='Generating...';btn.disabled=true;
+  try{
+    const{jsPDF}=window.jspdf;
+    const el=document.getElementById('print-area');
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth(),pageH=pdf.internal.pageSize.getHeight();
+    const margin=10,usableW=pageW-margin*2;
+    const imgH=(canvas.height*usableW)/canvas.width;
+    let remaining=imgH,yPos=margin;
+    while(remaining>0){
+      const sliceH=Math.min(remaining,pageH-margin*2);
+      const srcY=((imgH-remaining)/imgH)*canvas.height;
+      const srcH=(sliceH/imgH)*canvas.height;
+      const sc=document.createElement('canvas');
+      sc.width=canvas.width;sc.height=srcH;
+      sc.getContext('2d').drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
+      pdf.addImage(sc.toDataURL('image/png'),'PNG',margin,yPos,usableW,sliceH);
+      remaining-=sliceH;
+      if(remaining>0){pdf.addPage();yPos=margin;}
+    }
+    const code=gv('f-code')||'QUO',customer=gv('f-customer')||'quotation';
+    pdf.save(`QUO_${S.type}_${customer}_${code}.pdf`.replace(/\s+/g,'_'));
+  }catch(err){console.error(err);alert('PDF generation failed.');}
+  finally{btn.textContent=orig;btn.disabled=false;}
+}
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════════
+function openSettings(){
+  if(!currentUser||currentUser.role==='quo_user') return;
+  document.getElementById('settings-overlay').classList.add('open');
+  refreshCountryDropdowns();
+  // For supervisors, lock to their country
+  const isAdmin=currentUser.role==='admin';
+  const userCountry=currentUser.country;
+  const firstCountry=isAdmin?(hoursData.length?hoursData[0].country:''):(userCountry||'');
+  if(!settingsCountryHT||(!isAdmin&&settingsCountryHT!==userCountry)) settingsCountryHT=firstCountry;
+  if(!settingsCountryPFL||(!isAdmin&&settingsCountryPFL!==userCountry)) settingsCountryPFL=firstCountry;
+  const htSel=document.getElementById('settings-ht-country');
+  const pflSel=document.getElementById('settings-pfl-country');
+  if(htSel) htSel.value=settingsCountryHT;
+  if(pflSel) pflSel.value=settingsCountryPFL;
+  // Hide Working Hours tab for supervisors
+  const hoursTabs=document.querySelectorAll('.settings-tab');
+  hoursTabs[0].style.display=isAdmin?'':'none'; // Working Hours
+  // Show admin tab
+  document.getElementById('tab-admin-btn').style.display=isAdmin?'':'none';
+  // If supervisor and first tab is hidden, activate HT machines tab
+  if(!isAdmin){
+    switchSettingsTab('tab-ht-machines',hoursTabs[1]);
+  }
+  // Load machines
+  if(settingsCountryHT && COUNTRY_DATA[settingsCountryHT]){
+    const d=COUNTRY_DATA[settingsCountryHT];
+    WORKING_HOURS=d.workingHours; ELEC=d.elec;
+    htMachinesConfig.length=0; d.htMachinesConfig.forEach(m=>htMachinesConfig.push(m));
+  }
+  if(settingsCountryPFL && COUNTRY_DATA[settingsCountryPFL]){
+    const d=COUNTRY_DATA[settingsCountryPFL];
+    pflMachinesConfig.length=0; d.pflMachinesConfig.forEach(m=>pflMachinesConfig.push(m));
+  }
+  try{renderHoursTable();}catch(e){console.error('hours',e);}
+  try{renderMachineCards('ht');}catch(e){console.error('ht',e);}
+  try{renderMachineCards('pfl');}catch(e){console.error('pfl',e);}
+  if(isAdmin) try{renderUsersTable();}catch(e){console.error('admin',e);}
+}
+function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
+
+function switchSettingsTab(tabId,btn){
+  document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.settings-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');btn.classList.add('active');
+}
+
+// Hours
+function renderHoursTable(){
+  const tbody=document.getElementById('hours-tbody');tbody.innerHTML='';
+  hoursData.forEach((row,i)=>{
+    const days=row.hoursYear&&row.hoursDay?Math.round(row.hoursYear/row.hoursDay):'--';
+    tbody.innerHTML+=`<tr>
+      <td><input class="cfg-input wide" value="${row.country}" onchange="hoursData[${i}].country=this.value"></td>
+      <td><input class="cfg-input" style="width:90px;text-align:right" type="number" value="${row.hoursYear}" onchange="hoursData[${i}].hoursYear=+this.value;renderHoursTable()"></td>
+      <td><input class="cfg-input" style="width:80px;text-align:right" type="number" value="${row.hoursDay}" onchange="hoursData[${i}].hoursDay=+this.value;renderHoursTable()"></td>
+      <td style="font-family:'Space Mono',monospace;font-size:.72rem;text-align:right;color:var(--input-text);background:var(--calc);padding-right:140px">${days}</td>
+      <td><input class="cfg-input" style="width:70px;text-align:right" type="number" value="${row.shifts}" onchange="hoursData[${i}].shifts=+this.value"></td>
+      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1.2rem;font-weight:700;cursor:pointer;padding:4px 10px" onclick="hoursData.splice(${i},1);renderHoursTable()">✕</button></td></tr>`;
+  });
+}
+function addCountryRow(){hoursData.push({country:'New',hoursYear:1824,hoursDay:8,shifts:1});renderHoursTable();}
+function saveHours(){
+  // Ensure COUNTRY_DATA exists for each country in hoursData
+  hoursData.forEach(row=>{
+    ensureCountryData(row.country);
+    COUNTRY_DATA[row.country].workingHours=row.hoursYear;
+    COUNTRY_DATA[row.country].hoursDay=row.hoursDay;
+    COUNTRY_DATA[row.country].shifts=row.shifts;
+  });
+  // Remove countries no longer in hoursData
+  const activeNames=hoursData.map(r=>r.country);
+  Object.keys(COUNTRY_DATA).forEach(k=>{if(!activeNames.includes(k)) delete COUNTRY_DATA[k];});
+  refreshCountryDropdowns();
+  flashSave('hours-saved');
+}
+
+// Machine config
+function calcMachine(m,hy){
+  hy=hy||WORKING_HOURS;
+  const realSpeed=m.nomSpeed*(m.efficiency/100);
+  const elecHr=(ELEC.annualCost/hy)/ELEC.nMachines;
+  const devalHr=(m.accountVal/m.roiYears)/hy;
+  const maintHr=m.maintAnnual/hy;
+  const empTotal=m.empCost*(1+(m.socialPct||0)/100)+((m.extraTime||0)*80);
+  const salaryHr=empTotal/hy;
+  const totalHr=devalHr+salaryHr+elecHr+maintHr;
+  const setupCost=(totalHr/60)*m.setupTime;
+  const oneHit=realSpeed>0?totalHr/realSpeed:0;
+  return{realSpeed,elecHr,devalHr,maintHr,empTotal,salaryHr,totalHr,setupCost,oneHit};
+}
+
+function renderMachineCards(type){
+  const config=type==='ht'?htMachinesConfig:pflMachinesConfig;
+  const grid=document.getElementById(type+'-mach-cfg-grid');
+  grid.innerHTML='';
+  config.forEach((m,i)=>{
+    const c=calcMachine(m);
+    const card=document.createElement('div');card.className='mach-cfg-card';
+    const setupField=type==='ht'?'sheetsSetup':'metersSetup';
+    const setupLabel=type==='ht'?'Sheets Setup':'Meters Setup';
+    card.innerHTML=`
+      <div class="mach-cfg-card-head" onclick="this.parentElement.classList.toggle('open');event.stopPropagation()">
+        <input value="${m.name}" placeholder="Name" onchange="${type}MachinesConfig[${i}].name=this.value" onclick="event.stopPropagation()">
+        <span class="mch-toggle">&#9660;</span>
+        <button class="del-mach-btn" onclick="event.stopPropagation();${type}MachinesConfig.splice(${i},1);renderMachineCards('${type}')">x</button>
+      </div>
+      <div class="mach-cfg-body">
+        <div class="mach-cfg-section">Speed &amp; Setup</div>
+        <div class="mach-cfg-row col4">
+          <div class="mf"><label>Nom. Speed</label><input class="cfg-input" type="number" value="${m.nomSpeed}" onchange="${type}MachinesConfig[${i}].nomSpeed=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Efficiency %</label><input class="cfg-input" type="number" value="${m.efficiency}" onchange="${type}MachinesConfig[${i}].efficiency=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Setup (min)</label><input class="cfg-input" type="number" value="${m.setupTime}" onchange="${type}MachinesConfig[${i}].setupTime=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>${setupLabel}</label><input class="cfg-input" type="number" value="${m[setupField]}" onchange="${type}MachinesConfig[${i}].${setupField}=+this.value"></div>
+        </div>
+        <div class="mach-cfg-section">Employee</div>
+        <div class="mach-cfg-row col3">
+          <div class="mf"><label>Salary (EUR/yr)</label><input class="cfg-input" type="number" value="${m.empCost}" onchange="${type}MachinesConfig[${i}].empCost=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Social %</label><input class="cfg-input" type="number" value="${m.socialPct||0}" onchange="${type}MachinesConfig[${i}].socialPct=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Extra Time</label><input class="cfg-input" type="number" value="${m.extraTime||0}" onchange="${type}MachinesConfig[${i}].extraTime=+this.value;refreshCfgCard('${type}',${i})"></div>
+        </div>
+        <div class="mach-cfg-section">Devaluation &amp; Maint.</div>
+        <div class="mach-cfg-row col4">
+          <div class="mf"><label>Acct. Value</label><input class="cfg-input" type="number" value="${m.accountVal}" onchange="${type}MachinesConfig[${i}].accountVal=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>ROI (yrs)</label><input class="cfg-input" type="number" value="${m.roiYears}" onchange="${type}MachinesConfig[${i}].roiYears=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Maint. Annual</label><input class="cfg-input" type="number" value="${m.maintAnnual}" onchange="${type}MachinesConfig[${i}].maintAnnual=+this.value;refreshCfgCard('${type}',${i})"></div>
+          <div class="mf"><label>Total/Hour</label><div class="cfg-calc" id="${type}th-${i}">EUR ${c.totalHr.toFixed(4)}</div></div>
+        </div>
+        <div class="mach-cfg-section">Results</div>
+        <div class="mach-cfg-row col3">
+          <div class="mf"><label>EUR Setup</label><div class="cfg-calc" id="${type}sc-${i}" style="font-size:.9rem;font-weight:700">EUR ${c.setupCost.toFixed(4)}</div></div>
+          <div class="mf"><label>EUR / Unit</label><div class="cfg-calc" id="${type}oh-${i}" style="font-size:.9rem;font-weight:700">EUR ${c.oneHit.toFixed(6)}</div></div>
+          <div class="mf"><label>Real Speed</label><div class="cfg-calc" id="${type}rs-${i}">${c.realSpeed.toLocaleString()}</div></div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  const addBtn=document.createElement('button');
+  addBtn.className='add-machine-btn';addBtn.innerHTML='+ Add Machine';
+  addBtn.onclick=()=>addMachineCard(type);grid.appendChild(addBtn);
+}
+
+function refreshCfgCard(type,i){
+  const config=type==='ht'?htMachinesConfig:pflMachinesConfig;
+  const c=calcMachine(config[i]);
+  const s=(k,v)=>{const e=document.getElementById(type+k+'-'+i);if(e)e.textContent=v;};
+  s('th','EUR '+c.totalHr.toFixed(4));s('sc','EUR '+c.setupCost.toFixed(4));
+  s('oh','EUR '+c.oneHit.toFixed(6));s('rs',c.realSpeed.toLocaleString());
+}
+
+function addMachineCard(type){
+  const config=type==='ht'?htMachinesConfig:pflMachinesConfig;
+  const base=type==='ht'
+    ?{name:'New Machine',nomSpeed:1000,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0}
+    :{name:'New Machine',nomSpeed:500,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,metersSetup:0,empCost:21784,socialPct:23.75,extraTime:8.87};
+  config.push(base);renderMachineCards(type);
+}
+
+function saveMachines(type){
+  const config=type==='ht'?htMachinesConfig:pflMachinesConfig;
+  const machines=type==='ht'?HT_MACHINES:PFL_MACHINES;
+  config.forEach((m,i)=>{
+    const c=calcMachine(m);
+    const setupField=type==='ht'?'sheetsSetup':'metersSetup';
+    if(machines[i]){
+      machines[i].name=m.name;machines[i].setup=c.setupCost;machines[i].oneHit=c.oneHit;
+      machines[i][setupField]=m[setupField];
+    } else {
+      const entry={name:m.name,setup:c.setupCost,oneHit:c.oneHit};
+      entry[setupField]=m[setupField];machines.push(entry);
+    }
+  });
+  machines.length=config.length;
+  buildMachineList();
+  // Save to the country being edited in settings
+  const editCountry=type==='ht'?settingsCountryHT:settingsCountryPFL;
+  if(editCountry && COUNTRY_DATA[editCountry]){
+    COUNTRY_DATA[editCountry][type+'MachinesConfig']=JSON.parse(JSON.stringify(config));
+    COUNTRY_DATA[editCountry][type+'Machines']=JSON.parse(JSON.stringify(machines));
+  }
+  flashSave(type+'-machines-saved');
+}
+
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function pf(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function pi(id){return parseInt(document.getElementById(id)?.value)||0;}
+function gv(id){return document.getElementById(id)?.value||'';}
+function sv(id,v){const e=document.getElementById(id);if(e)e.value=v;}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function sec(t){return'<div class="print-section-title" style="margin-top:14px">'+t+'</div>';}
+function pr(l,v){return'<div class="print-info-row"><span class="print-info-lbl">'+l+'</span><span class="print-info-val">'+(v||'--')+'</span></div>';}
+function flashSave(id){const e=document.getElementById(id);if(!e)return;e.style.display='inline';setTimeout(()=>e.style.display='none',2500);}
+
+// ══════════════════════════════════════════════════════════
+// RESET ALL
+// ══════════════════════════════════════════════════════════
+function resetAll(){
+  // Clear selections
+  S.country=null; S.line=null; S.type=null; tech={}; productImageData=null;
+  const csel=document.getElementById('country-select'); if(csel) csel.value='';
+  // Deselect tiles
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
+  // Reset all inputs
+  document.querySelectorAll('#page-2 input[type="number"], #page-2 input[type="text"]').forEach(el=>{
+    if(el.classList.contains('calc')||el.readOnly) el.value='';
+    else if(el.defaultValue) el.value=el.defaultValue;
+    else el.value='';
+  });
+  document.querySelectorAll('#page-2 select').forEach(el=>el.selectedIndex=0);
+  // Uncheck all machines
+  document.querySelectorAll('.mach-item').forEach(el=>el.classList.remove('checked'));
+  document.querySelectorAll('.mach-setup-inp').forEach(el=>el.disabled=true);
+  // Clear image
+  clearImage();
+  // Go to step 1
+  goStep(1);
+}
+
+// Initialize country data on load
+initCountryData();
+// Focus login email
+setTimeout(()=>{const e=document.getElementById('login-email');if(e)e.focus();},200);
+</script>
+</body>
+</html>
