@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUO — Setup Admin Account</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+  :root{--bg:#F4F4F4;--red:#E21B1B;--dark:#1A1A1A}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .box{background:#fff;border-radius:8px;padding:40px;width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center}
+  h2{font-size:1rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dark);margin-bottom:8px}
+  .sub{font-size:.75rem;color:#888;margin-bottom:20px;line-height:1.5}
+  .field{text-align:left;margin-bottom:12px}
+  .field label{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:4px;display:block}
+  .field input{font-family:'Space Mono',monospace;font-size:.85rem;width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:3px}
+  .field input:focus{outline:none;border-color:var(--red)}
+  .btn{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--red);color:#fff;border:none;border-radius:3px;padding:12px 28px;cursor:pointer;width:100%;margin-top:8px}
+  .btn:hover{background:#b01818}
+  .btn:disabled{background:#ccc;cursor:not-allowed}
+  .msg{font-size:.72rem;margin-top:12px;font-weight:600;min-height:20px}
+  .msg.ok{color:#006633}.msg.err{color:var(--red)}
+  .warn{background:#fff3cd;border:1px solid #ffc107;border-radius:3px;padding:10px;font-size:.72rem;color:#856404;margin-top:16px;text-align:left}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Setup Admin Account</h2>
+  <p class="sub">Create the first administrator account for the Quotation Tool.<br>Run this only once.</p>
+  <div class="field"><label>Admin Email</label>
+    <input type="email" id="email" value="sito041971@gmail.com"></div>
+  <div class="field"><label>Password</label>
+    <input type="password" id="password" placeholder="Min 6 characters"></div>
+  <button class="btn" id="btn" onclick="setup()">Create Admin Account</button>
+  <div class="msg" id="msg"></div>
+  <div class="warn">
+    <strong>Important:</strong> This page creates a Firebase Auth user and writes the admin role to Firestore.
+    After setup, delete this file or restrict access.
+    Use the main app to manage additional users.
+  </div>
+</div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDrZTlE3vwaewiyhGWD2Tec0sOt-MUyMdQ",
+  authDomain: "quotation-tool-7989f.firebaseapp.com",
+  projectId: "quotation-tool-7989f",
+  storageBucket: "quotation-tool-7989f.firebasestorage.app",
+  messagingSenderId: "779139506213",
+  appId: "1:779139506213:web:06a53fbc72bab751a89fcc"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+async function setup() {
+  const email = document.getElementById('email').value.trim();
+  const pwd = document.getElementById('password').value;
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('btn');
+
+  if (!email || !pwd) { msg.className='msg err'; msg.textContent='Fill in all fields.'; return; }
+  if (pwd.length < 6) { msg.className='msg err'; msg.textContent='Password must be at least 6 characters.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  try {
+    // Check if any users already exist
+    const existing = await db.collection('users').limit(1).get();
+    if (!existing.empty) {
+      msg.className = 'msg err';
+      msg.textContent = 'An admin already exists. Use the main app to manage users.';
+      btn.disabled = false;
+      btn.textContent = 'Create Admin Account';
+      return;
+    }
+
+    // Create Firebase Auth user
+    const cred = await auth.createUserWithEmailAndPassword(email, pwd);
+
+    // Write admin user doc to Firestore
+    await db.collection('users').doc(cred.user.uid).set({
+      email: email.toLowerCase(),
+      role: 'admin',
+      country: '',
+      displayName: email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: 'setup'
+    });
+
+    msg.className = 'msg ok';
+    msg.textContent = 'Admin account created successfully! You can now log in at index.html.';
+    btn.textContent = 'Done';
+
+    // Sign out
+    await auth.signOut();
+  } catch (err) {
+    console.error(err);
+    msg.className = 'msg err';
+    if (err.code === 'auth/email-already-in-use') {
+      msg.textContent = 'This email is already registered in Firebase Auth. If the Firestore doc is missing, delete the auth user from Firebase console and try again.';
+    } else {
+      msg.textContent = err.message;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Create Admin Account';
+  }
+}
+</script>
+</body>
+</html>

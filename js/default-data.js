@@ -1,0 +1,51 @@
+// ══════════════════════════════════════════════════════════
+// DEFAULT MACHINE CONFIGURATIONS (for seeding)
+// ══════════════════════════════════════════════════════════
+
+const DEFAULT_HT_CONFIG = [
+  {name:'GUILLOTINE PG',nomSpeed:12000,efficiency:90,accountVal:27500,roiYears:8,maintAnnual:500,setupTime:10,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'OFFSET SM 74 PG',nomSpeed:3500,efficiency:90,accountVal:70000,roiYears:8,maintAnnual:2000,setupTime:30,sheetsSetup:100,empCost:27766,socialPct:0,extraTime:0},
+  {name:'GTO OFFSET 52 PG',nomSpeed:3000,efficiency:90,accountVal:22000,roiYears:8,maintAnnual:1000,setupTime:20,sheetsSetup:50,empCost:27766,socialPct:0,extraTime:0},
+  {name:'HORIZON PG',nomSpeed:3000,efficiency:90,accountVal:50500,roiYears:8,maintAnnual:750,setupTime:20,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'KONICA PG',nomSpeed:1500,efficiency:90,accountVal:6420,roiYears:1,maintAnnual:0,setupTime:5,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DIE CUTTING PG CYLINDER',nomSpeed:1500,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:20,sheetsSetup:30,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DIE CUTTING PG PLANA',nomSpeed:500,efficiency:90,accountVal:13800,roiYears:8,maintAnnual:250,setupTime:30,sheetsSetup:30,empCost:26958,socialPct:0,extraTime:0},
+  {name:'OKI PG',nomSpeed:600,efficiency:90,accountVal:7000,roiYears:1,maintAnnual:100,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'CLS 526 INKJET PG',nomSpeed:10000,efficiency:90,accountVal:90000,roiYears:8,maintAnnual:9000,setupTime:15,sheetsSetup:10,empCost:26958,socialPct:0,extraTime:0},
+  {name:'KETAN INLAY APPLICATION PG',nomSpeed:1000,efficiency:90,accountVal:41000,roiYears:8,maintAnnual:1000,setupTime:45,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'MACSA SANDWICH 50MM PG',nomSpeed:9600,efficiency:90,accountVal:30000,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'UD PACK SOLO APLICA DRY PEEL PG',nomSpeed:5000,efficiency:90,accountVal:8000,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'UD PACK CLS RFID CODIFICA PG',nomSpeed:2500,efficiency:95,accountVal:12500,roiYears:8,maintAnnual:750,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'WAN ZHI DP PRINT & APPLY PG',nomSpeed:5000,efficiency:90,accountVal:21500,roiYears:8,maintAnnual:2000,setupTime:20,sheetsSetup:50,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZHILIAN INKJET PRINTED',nomSpeed:10000,efficiency:90,accountVal:50000,roiYears:8,maintAnnual:7000,setupTime:15,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZHILIAN SIM-206H (3 PRINT DP)',nomSpeed:15000,efficiency:90,accountVal:121192,roiYears:8,maintAnnual:11000,setupTime:20,sheetsSetup:0,empCost:53916,socialPct:0,extraTime:0},
+  {name:'SMARTCLOTH DEVICE',nomSpeed:5000,efficiency:80,accountVal:500000,roiYears:10,maintAnnual:2000,setupTime:45,sheetsSetup:100,empCost:18000,socialPct:0,extraTime:0},
+  {name:'ROBOT DE CORTE PG',nomSpeed:20,efficiency:80,accountVal:5000,roiYears:8,maintAnnual:100,setupTime:10,sheetsSetup:5,empCost:26958,socialPct:0,extraTime:0},
+  {name:'ZEBRA + CUT + E&QC CLS 524H',nomSpeed:6250,efficiency:90,accountVal:32600,roiYears:8,maintAnnual:1500,setupTime:20,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+  {name:'DESTROQUELAR',nomSpeed:0,efficiency:100,accountVal:0,roiYears:1,maintAnnual:0,setupTime:0,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0},
+];
+
+const DEFAULT_PFL_CONFIG = [
+  {name:'FLEXO PG',nomSpeed:700,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:30,metersSetup:20,empCost:22438,socialPct:23.75,extraTime:8.87},
+  {name:'CDS OFFSET PG 3+1 4+1',nomSpeed:800,efficiency:90,accountVal:20000,roiYears:8,maintAnnual:1250,setupTime:30,metersSetup:20,empCost:22438,socialPct:23.75,extraTime:8.87},
+  {name:'MERCURY 4&5" 2+1 PG',nomSpeed:400,efficiency:90,accountVal:21000,roiYears:8,maintAnnual:2500,setupTime:15,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'WILLY CUT & FOLD PG',nomSpeed:450,efficiency:90,accountVal:5000,roiYears:8,maintAnnual:250,setupTime:30,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ULTRASONIC IMPAK CUT PG',nomSpeed:690,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:750,setupTime:5,metersSetup:3,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'JING DA HOT/COLD CUT PG',nomSpeed:250,efficiency:90,accountVal:3600,roiYears:8,maintAnnual:400,setupTime:10,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'NOVEX PG',nomSpeed:400,efficiency:90,accountVal:3000,roiYears:8,maintAnnual:2500,setupTime:6,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'UD PACK CLS CODIFICACION ROLLO PG',nomSpeed:350,efficiency:90,accountVal:15200,roiYears:8,maintAnnual:1000,setupTime:10,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'RC ULTRASONIC CUT & FOLD PG',nomSpeed:825,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:500,setupTime:10,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'MACSA PRINT & APPLY PG',nomSpeed:330,efficiency:90,accountVal:25000,roiYears:8,maintAnnual:1500,setupTime:15,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'CAB 1+1 PG',nomSpeed:180,efficiency:90,accountVal:3000,roiYears:8,maintAnnual:2000,setupTime:10,metersSetup:5,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN RCL 601 INKJET ROLL FORM',nomSpeed:2400,efficiency:75,accountVal:66000,roiYears:8,maintAnnual:15000,setupTime:10,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'NOVEX + UD PACK CLS COD. ROLLO',nomSpeed:350,efficiency:90,accountVal:18200,roiYears:8,maintAnnual:3500,setupTime:16,metersSetup:2,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'UD PACK SANDWICH',nomSpeed:490,efficiency:95,accountVal:8000,roiYears:8,maintAnnual:750,setupTime:15,metersSetup:0,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN PFL INKJET 2+1 ROLL FORM',nomSpeed:1125,efficiency:90,accountVal:98000,roiYears:8,maintAnnual:15000,setupTime:20,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ULTRASONIC CUT SIN PERSONAL',nomSpeed:690,efficiency:90,accountVal:15000,roiYears:8,maintAnnual:3250,setupTime:5,metersSetup:3,empCost:0,socialPct:0,extraTime:8.87},
+  {name:'ZHILIAN PFL PRIMER APLICATOR',nomSpeed:8000,efficiency:90,accountVal:13000,roiYears:8,maintAnnual:500,setupTime:1,metersSetup:1,empCost:0,socialPct:0,extraTime:8.87},
+  {name:'SERIGRAFIA ROLL FORM PG',nomSpeed:250,efficiency:75,accountVal:12500,roiYears:8,maintAnnual:2000,setupTime:30,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZHILIAN 601 INKJET & RFID ROLL FORM',nomSpeed:1000,efficiency:72,accountVal:92600,roiYears:8,maintAnnual:15000,setupTime:10,metersSetup:10,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'ZEBRA PG',nomSpeed:200,efficiency:90,accountVal:4800,roiYears:10,maintAnnual:2500,setupTime:10,metersSetup:1,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'WingSing Inlay + WingSing cut&fold',nomSpeed:305,efficiency:90,accountVal:38500,roiYears:8,maintAnnual:1000,setupTime:50,metersSetup:8,empCost:21784,socialPct:23.75,extraTime:8.87},
+  {name:'DIVISION CINTA TEJIDA PG',nomSpeed:660,efficiency:90,accountVal:17400,roiYears:8,maintAnnual:500,setupTime:15,metersSetup:3,empCost:21784,socialPct:23.75,extraTime:8.87},
+];
