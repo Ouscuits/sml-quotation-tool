@@ -13,6 +13,7 @@ async function loadCountries() {
     return countries;
   } catch (err) {
     console.error('Error loading countries:', err);
+    alert('Error loading countries: ' + err.message + '\nPlease check Firestore security rules.');
     return [];
   }
 }
@@ -172,6 +173,25 @@ async function uploadMaterialsToCountry(countryId, rows) {
   }
 }
 
+async function deleteMaterialsForCountry(countryId) {
+  try {
+    const colRef = db.collection('countries').doc(countryId).collection('materials');
+    const snapshot = await colRef.get();
+    const batchSize = 450;
+    const docs = [];
+    snapshot.forEach(doc => docs.push(doc.ref));
+    for (let i = 0; i < docs.length; i += batchSize) {
+      const batch = db.batch();
+      docs.slice(i, i + batchSize).forEach(ref => batch.delete(ref));
+      await batch.commit();
+    }
+    return true;
+  } catch (err) {
+    console.error('Error deleting materials:', err);
+    return false;
+  }
+}
+
 // ── USERS (admin) ────────────────────────────────────────
 async function loadAllUsers() {
   try {
@@ -238,6 +258,9 @@ async function loadAppData() {
         return { name: m.name, setup: calc.setupCost, oneHit: calc.oneHit, metersSetup: m.metersSetup };
       });
 
+      // Load materials for this country
+      const materials = await loadMaterialsForCountry(c.id);
+
       COUNTRY_DATA[c.name] = {
         id: c.id,
         workingHours: hy,
@@ -247,7 +270,8 @@ async function loadAppData() {
         htMachines: htDerived,
         pflMachines: pflDerived,
         htMachinesConfig: htCfg,
-        pflMachinesConfig: pflCfg
+        pflMachinesConfig: pflCfg,
+        materials: materials
       };
     }
 

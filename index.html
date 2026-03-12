@@ -284,10 +284,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .add-machine-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;background:#fff;border:2px dashed var(--border-light);border-radius:var(--radius);cursor:pointer;font-size:.75rem;font-weight:600;color:#aaa;transition:.15s;width:100%}
 .add-machine-btn:hover{border-color:var(--red);color:var(--red)}
 
+/* MATERIALS TABLE */
+.mat-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mat-filter{font-family:'DM Sans',sans-serif;font-size:.78rem;padding:6px 12px;border:1.5px solid var(--border);border-radius:3px;background:#fff;cursor:pointer}
+.mat-filter:focus{outline:none;border-color:var(--red)}
+.mat-search{font-family:'Space Mono',monospace;font-size:.78rem;padding:6px 12px;border:1.5px solid var(--border);border-radius:3px;width:260px;background:#fff}
+.mat-search:focus{outline:none;border-color:var(--red)}
+.mat-upload-btn{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:#2a6e4e;color:#fff;border:none;border-radius:3px;padding:8px 16px;cursor:pointer;transition:.15s}
+.mat-upload-btn:hover{background:#1d5a3c}
+.mat-count{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--label)}
+.mat-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-top:12px}
+.mat-table thead tr{background:#2a2a2a}
+.mat-table th{padding:8px 10px;text-align:left;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa;white-space:nowrap;cursor:pointer;user-select:none}
+.mat-table th:hover{color:#fff}
+.mat-table th.r{text-align:right}
+.mat-table td{padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:.72rem;vertical-align:middle;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mat-table td.mono{font-family:'Space Mono',monospace;color:var(--input-text)}
+.mat-table td.r{text-align:right}
+.mat-table tbody tr:hover{background:#fafafa}
+.mat-table tbody tr.rm-row{border-left:3px solid var(--red)}
+.mat-table tbody tr.fg-row{border-left:3px solid #2a6e4e}
+.mat-tag{display:inline-block;font-size:.58rem;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:2px;text-transform:uppercase}
+.mat-tag.rm{background:rgba(226,27,27,0.08);color:var(--red)}
+.mat-tag.fg{background:rgba(42,110,78,0.08);color:#2a6e4e}
+.mat-pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px}
+.mat-pagination button{font-size:.72rem;padding:6px 12px;border:1.5px solid var(--border-light);border-radius:3px;background:#fff;cursor:pointer;transition:.15s}
+.mat-pagination button:hover{border-color:var(--red);color:var(--red)}
+.mat-pagination button:disabled{opacity:.4;cursor:not-allowed}
+.mat-pagination span{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--label)}
+
+/* MATERIAL AUTOCOMPLETE */
+.mat-ac-wrap{position:relative}
+.mat-ac-wrap input{width:100%}
+.mat-ac-list{position:absolute;top:100%;left:0;right:0;z-index:50;background:#fff;border:1.5px solid var(--border);border-top:none;border-radius:0 0 3px 3px;max-height:220px;overflow-y:auto;box-shadow:0 6px 16px rgba(0,0,0,0.12);display:none}
+.mat-ac-list.open{display:block}
+.mat-ac-item{padding:7px 10px;font-size:.72rem;cursor:pointer;display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #f4f4f4}
+.mat-ac-item:hover,.mat-ac-item.active{background:var(--red-light)}
+.mat-ac-item .ac-ref{font-family:'Space Mono',monospace;font-weight:600;color:var(--input-text)}
+.mat-ac-item .ac-name{color:var(--label);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mat-ac-item .ac-price{font-family:'Space Mono',monospace;font-weight:600;color:var(--red);white-space:nowrap}
+
 @media print{.no-print,.logo-area{display:none!important}.page{padding:0!important}body{background:#fff}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -414,7 +455,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
         <div class="card-body">
           <div class="fg fg-3">
             <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
-              <input type="text" id="f-mat-ref" placeholder="e.g. FSC32596X76WHMBNTR"></div>
+              <div class="mat-ac-wrap">
+                <input type="text" id="f-mat-ref" placeholder="e.g. FSC32596X76WHMBNTR" autocomplete="off" oninput="materialAutocomplete(this,'ht')" onfocus="materialAutocomplete(this,'ht')">
+                <div class="mat-ac-list" id="ac-ht-list"></div>
+              </div></div>
             <div class="f"><label>GSM (grams/m2)</label>
               <div class="input-unit"><input type="number" id="f-gsm" value="325" min="1" oninput="recalcAll()"><span class="unit">gsm</span></div></div>
             <div class="f"><label>Cost / Sheet <span class="req">*</span></label>
@@ -433,7 +477,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
         <div class="card-body">
           <div class="fg fg-3">
             <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
-              <input type="text" id="pf-mat-ref" placeholder="e.g. Etilabel satin"></div>
+              <div class="mat-ac-wrap">
+                <input type="text" id="pf-mat-ref" placeholder="e.g. Etilabel satin" autocomplete="off" oninput="materialAutocomplete(this,'pfl')" onfocus="materialAutocomplete(this,'pfl')">
+                <div class="mat-ac-list" id="ac-pfl-list"></div>
+              </div></div>
             <div class="f"><label>Cost / Unit <span class="req">*</span></label>
               <div class="input-unit"><input type="number" id="pf-mat-cost" placeholder="0.0076" step="0.0001" min="0" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
             <div class="f"><label>Material Waste %</label>
@@ -693,6 +740,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
       <div class="settings-tab" id="tab-library-btn" onclick="switchSettingsTab('tab-library',this)" style="display:none">Machine Library</div>
       <div class="settings-tab" onclick="switchSettingsTab('tab-ht-machines',this)">HT Machines</div>
       <div class="settings-tab" onclick="switchSettingsTab('tab-pfl-machines',this)">PFL Machines</div>
+      <div class="settings-tab" id="tab-materials-btn" onclick="switchSettingsTab('tab-materials',this)">Raw Materials</div>
       <div class="settings-tab" id="tab-admin-btn" onclick="switchSettingsTab('tab-admin',this)" style="display:none">Admin</div>
     </div>
     <div class="settings-body">
@@ -760,6 +808,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
           </div>
         </div>
         <div class="mach-cfg-grid" id="pfl-mach-cfg-grid"></div>
+      </div>
+      <!-- RAW MATERIALS -->
+      <div class="settings-section" id="tab-materials">
+        <div class="settings-save-row">
+          <div class="mat-toolbar">
+            <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label)">Country:</label>
+            <select id="settings-mat-country" class="country-dropdown" style="font-size:.82rem;padding:8px 34px 8px 12px;width:auto;min-width:160px" onchange="switchMaterialCountry(this.value)"></select>
+            <select id="mat-type-filter" class="mat-filter" onchange="renderMaterialsTable()">
+              <option value="">All Types</option>
+              <option value="PAPER">Paper</option>
+              <option value="Ribbon">Ribbon</option>
+              <option value="Ink">Ink</option>
+              <option value="RFID">RFID</option>
+              <option value="Woven Label">Woven Label</option>
+              <option value="Printed Label">Printed Label</option>
+              <option value="Sticker">Sticker</option>
+              <option value="Paper Printing">Paper Printing</option>
+              <option value="Heat Transfer">Heat Transfer</option>
+              <option value="Seal">Seal</option>
+            </select>
+            <select id="mat-item-filter" class="mat-filter" onchange="renderMaterialsTable()">
+              <option value="">RM + FG</option>
+              <option value="RM">RM only</option>
+              <option value="FG">FG only</option>
+            </select>
+            <input type="text" id="mat-search-input" class="mat-search" placeholder="Search reference or name..." oninput="renderMaterialsTable()">
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="mat-count" id="mat-count"></span>
+            <span class="save-ok" id="materials-saved">Saved</span>
+            <label class="mat-upload-btn" style="cursor:pointer">
+              Upload Excel
+              <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleMaterialsUpload(event)">
+            </label>
+            <button class="btn btn-dark" style="background:#8b1a1a" onclick="clearAllMaterials()">Clear All</button>
+          </div>
+        </div>
+        <div id="mat-table-wrap"></div>
+        <div class="mat-pagination" id="mat-pagination"></div>
       </div>
       <!-- ADMIN SECTION -->
       <div class="settings-section" id="tab-admin">
@@ -860,6 +947,7 @@ function ensureCountryData(name){
       pflMachines:JSON.parse(JSON.stringify(PFL_MACHINES)),
       htMachinesConfig:JSON.parse(JSON.stringify(htMachinesConfig)),
       pflMachinesConfig:JSON.parse(JSON.stringify(pflMachinesConfig)),
+      materials:[]
     };
   }
 }
@@ -1650,6 +1738,16 @@ function openSettings(){
   try{renderMachineCards('pfl');}catch(e){console.error('pfl',e);}
   if(isAdmin) try{renderUsersTable();}catch(e){console.error('admin',e);}
   if(isAdmin) try{loadLibrary();}catch(e){console.error('library',e);}
+  // Materials tab - init country dropdown and load
+  const matSel=document.getElementById('settings-mat-country');
+  if(matSel){
+    const matCountries=isAdmin?hoursData.map(r=>r.country):(userCountry?[userCountry]:[]);
+    matSel.innerHTML='';
+    matCountries.forEach(c=>{matSel.innerHTML+=`<option value="${c}">${c}</option>`;});
+    if(!settingsCountryMat || (!isAdmin && settingsCountryMat!==userCountry)) settingsCountryMat=firstCountry;
+    matSel.value=settingsCountryMat;
+    loadMaterialsForSettings();
+  }
 }
 function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
 
@@ -2016,6 +2114,269 @@ function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function sec(t){return'<div class="print-section-title" style="margin-top:14px">'+t+'</div>';}
 function pr(l,v){return'<div class="print-info-row"><span class="print-info-lbl">'+l+'</span><span class="print-info-val">'+(v||'--')+'</span></div>';}
 function flashSave(id){const e=document.getElementById(id);if(!e)return;e.style.display='inline';setTimeout(()=>e.style.display='none',2500);}
+
+// ══════════════════════════════════════════════════════════
+// RAW MATERIALS
+// ══════════════════════════════════════════════════════════
+let countryMaterials = []; // loaded from Firestore for current settings country
+let settingsCountryMat = '';
+const MAT_PAGE_SIZE = 50;
+let matPage = 0;
+
+function switchMaterialCountry(country) {
+  settingsCountryMat = country;
+  matPage = 0;
+  loadMaterialsForSettings();
+}
+
+async function loadMaterialsForSettings() {
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) { countryMaterials = []; renderMaterialsTable(); return; }
+  const countryId = COUNTRY_DATA[settingsCountryMat].id;
+  if (!countryId) { countryMaterials = []; renderMaterialsTable(); return; }
+  showLoadingOverlay('Loading materials...');
+  try {
+    countryMaterials = await loadMaterialsForCountry(countryId);
+  } catch(e) { console.error(e); countryMaterials = []; }
+  hideLoadingOverlay();
+  renderMaterialsTable();
+}
+
+function getFilteredMaterials() {
+  const typeF = document.getElementById('mat-type-filter')?.value || '';
+  const itemF = document.getElementById('mat-item-filter')?.value || '';
+  const search = (document.getElementById('mat-search-input')?.value || '').toLowerCase().trim();
+  return countryMaterials.filter(m => {
+    if (typeF && m.prodType !== typeF) return false;
+    if (itemF && m.itemType !== itemF) return false;
+    if (search && !m.reference.toLowerCase().includes(search) && !(m.name || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+}
+
+function renderMaterialsTable() {
+  const wrap = document.getElementById('mat-table-wrap');
+  const pagDiv = document.getElementById('mat-pagination');
+  const filtered = getFilteredMaterials();
+  document.getElementById('mat-count').textContent = filtered.length + ' of ' + countryMaterials.length + ' items';
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / MAT_PAGE_SIZE));
+  if (matPage >= totalPages) matPage = totalPages - 1;
+  const start = matPage * MAT_PAGE_SIZE;
+  const page = filtered.slice(start, start + MAT_PAGE_SIZE);
+
+  if (!page.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-size:.82rem">No materials loaded. Upload an Excel file to populate.</div>';
+    pagDiv.innerHTML = '';
+    return;
+  }
+
+  let html = `<table class="mat-table"><thead><tr>
+    <th>Type</th><th>Item</th><th>Reference</th><th>Name</th>
+    <th>Unit</th><th class="r">Price/Unit</th><th class="r">Price/Kpcs</th>
+    <th>Prod Type</th><th>Category</th><th class="r">Stock</th>
+    <th style="width:36px"></th>
+  </tr></thead><tbody>`;
+
+  page.forEach((m, i) => {
+    const cls = m.itemType === 'RM' ? 'rm-row' : 'fg-row';
+    const tag = m.itemType === 'RM' ? '<span class="mat-tag rm">RM</span>' : '<span class="mat-tag fg">FG</span>';
+    const matId = m.id || '';
+    html += `<tr class="${cls}">
+      <td>${tag}</td>
+      <td class="mono" style="font-size:.65rem">${m.itemType || '--'}</td>
+      <td class="mono" style="font-weight:600" title="${m.reference}">${m.reference || '--'}</td>
+      <td title="${m.name || ''}">${m.name || '--'}</td>
+      <td class="mono">${m.unit || '--'}</td>
+      <td class="mono r">${m.priceUnit != null ? m.priceUnit.toFixed(4) : '--'}</td>
+      <td class="mono r">${m.priceKpcs != null ? m.priceKpcs.toFixed(2) : '--'}</td>
+      <td style="font-size:.65rem">${m.prodType || '--'}</td>
+      <td style="font-size:.65rem">${m.category || '--'}</td>
+      <td class="mono r">${m.stock != null ? m.stock.toLocaleString() : '--'}</td>
+      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1rem;font-weight:700;cursor:pointer;padding:2px 6px" onclick="deleteMaterialById('${matId}','${(m.reference||'').replace(/'/g,'')}')">✕</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+
+  // Pagination
+  if (totalPages > 1) {
+    pagDiv.innerHTML = `
+      <button onclick="matPage=0;renderMaterialsTable()" ${matPage === 0 ? 'disabled' : ''}>First</button>
+      <button onclick="matPage--;renderMaterialsTable()" ${matPage === 0 ? 'disabled' : ''}>Prev</button>
+      <span>Page ${matPage + 1} of ${totalPages}</span>
+      <button onclick="matPage++;renderMaterialsTable()" ${matPage >= totalPages - 1 ? 'disabled' : ''}>Next</button>
+      <button onclick="matPage=${totalPages - 1};renderMaterialsTable()" ${matPage >= totalPages - 1 ? 'disabled' : ''}>Last</button>`;
+  } else {
+    pagDiv.innerHTML = '';
+  }
+}
+
+async function handleMaterialsUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = ''; // reset so same file can be re-uploaded
+
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) {
+    alert('Select a country first.');
+    return;
+  }
+  const countryId = COUNTRY_DATA[settingsCountryMat].id;
+  if (!countryId) { alert('Country has no ID. Save hours first.'); return; }
+
+  showLoadingOverlay('Reading Excel...');
+  try {
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(ws, { defval: null });
+
+    if (!json.length) { alert('No data found in Excel.'); hideLoadingOverlay(); return; }
+
+    // Map Excel columns to our schema
+    const rows = json.filter(r => r['Item number']).map(r => ({
+      reference: String(r['Item number'] || '').trim(),
+      name: String(r['Item name'] || '').trim(),
+      stock: r['Stock (Qty)'] != null ? +r['Stock (Qty)'] : null,
+      unit: String(r['Unit'] || '').trim(),
+      priceUnit: r['Price(Unit)'] != null ? +r['Price(Unit)'] : null,
+      priceKpcs: r['Price(Kpcs)'] != null ? +r['Price(Kpcs)'] : null,
+      totalEur: r['Total EUR'] != null ? +r['Total EUR'] : null,
+      itemType: String(r['Item type'] || '').trim(),
+      category: String(r['SL/RFID?'] || '').trim(),
+      prodType: String(r['Prod_Type'] || '').trim(),
+      aging: String(r['Aging'] || '').trim(),
+      obs: String(r['Obs'] || '').trim(),
+      decision: String(r['Decision'] || '').trim()
+    }));
+
+    if (!rows.length) { alert('No valid rows found.'); hideLoadingOverlay(); return; }
+
+    const replace = countryMaterials.length > 0
+      ? confirm(`${settingsCountryMat} already has ${countryMaterials.length} materials.\n\nReplace all with ${rows.length} new items from Excel?`)
+      : true;
+
+    if (!replace) { hideLoadingOverlay(); return; }
+
+    document.getElementById('loading-text').textContent = 'Clearing old data...';
+    if (countryMaterials.length > 0) {
+      await deleteMaterialsForCountry(countryId);
+    }
+
+    document.getElementById('loading-text').textContent = `Uploading ${rows.length} materials...`;
+    await uploadMaterialsToCountry(countryId, rows);
+
+    countryMaterials = await loadMaterialsForCountry(countryId);
+    matPage = 0;
+    renderMaterialsTable();
+    flashSave('materials-saved');
+    // Also refresh autocomplete cache
+    if (COUNTRY_DATA[settingsCountryMat]) {
+      COUNTRY_DATA[settingsCountryMat].materials = countryMaterials;
+    }
+  } catch(err) {
+    console.error('Materials upload error:', err);
+    alert('Error uploading: ' + err.message);
+  } finally {
+    hideLoadingOverlay();
+  }
+}
+
+async function clearAllMaterials() {
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) return;
+  if (!countryMaterials.length) { alert('No materials to clear.'); return; }
+  if (!confirm(`Delete all ${countryMaterials.length} materials for ${settingsCountryMat}?`)) return;
+  const countryId = COUNTRY_DATA[settingsCountryMat].id;
+  showLoadingOverlay('Deleting materials...');
+  try {
+    await deleteMaterialsForCountry(countryId);
+    countryMaterials = [];
+    if (COUNTRY_DATA[settingsCountryMat]) COUNTRY_DATA[settingsCountryMat].materials = [];
+    renderMaterialsTable();
+    flashSave('materials-saved');
+  } catch(e) { alert('Error: ' + e.message); }
+  finally { hideLoadingOverlay(); }
+}
+
+async function deleteMaterialById(matId, ref) {
+  if (!matId) return;
+  if (!confirm('Delete ' + ref + '?')) return;
+  const countryId = COUNTRY_DATA[settingsCountryMat]?.id;
+  if (countryId) {
+    try {
+      await db.collection('countries').doc(countryId).collection('materials').doc(matId).delete();
+      const idx = countryMaterials.findIndex(m => m.id === matId);
+      if (idx >= 0) countryMaterials.splice(idx, 1);
+      if (COUNTRY_DATA[settingsCountryMat]) COUNTRY_DATA[settingsCountryMat].materials = countryMaterials;
+      renderMaterialsTable();
+    } catch(e) { alert('Error: ' + e.message); }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// MATERIAL AUTOCOMPLETE (quotation form)
+// ══════════════════════════════════════════════════════════
+function getMaterialsForAutocomplete(type) {
+  const country = S.country;
+  if (!country || !COUNTRY_DATA[country]) return [];
+  const mats = COUNTRY_DATA[country].materials || [];
+  if (type === 'ht') {
+    // For HT: PAPER items (SHEET unit) are primary, also show RM items
+    return mats.filter(m => m.prodType === 'PAPER' || (m.itemType === 'RM' && m.unit === 'SHEET'));
+  } else {
+    // For PFL: Ribbon items (M unit) are primary, also show RM items with M unit
+    return mats.filter(m => m.prodType === 'Ribbon' || (m.itemType === 'RM' && m.unit === 'M'));
+  }
+}
+
+function materialAutocomplete(input, type) {
+  const listId = 'ac-' + type + '-list';
+  const list = document.getElementById(listId);
+  if (!list) return;
+  const q = input.value.toLowerCase().trim();
+  const mats = getMaterialsForAutocomplete(type);
+
+  if (!mats.length || q.length < 1) { list.classList.remove('open'); return; }
+
+  const matches = mats.filter(m =>
+    m.reference.toLowerCase().includes(q) || (m.name || '').toLowerCase().includes(q)
+  ).slice(0, 15);
+
+  if (!matches.length) { list.classList.remove('open'); return; }
+
+  list.innerHTML = matches.map(m => {
+    const price = m.priceUnit != null ? 'EUR ' + m.priceUnit.toFixed(4) : '';
+    const desc = (m.name || '').substring(0, 50);
+    return `<div class="mat-ac-item" onmousedown="selectMaterial('${type}','${m.reference.replace(/'/g, "\\'")}',${m.priceUnit || 0},'${(m.unit || '').replace(/'/g, "\\'")}','${desc.replace(/'/g, "\\'")}')">
+      <span class="ac-ref">${m.reference}</span>
+      <span class="ac-name">${desc}</span>
+      <span class="ac-price">${price}</span>
+    </div>`;
+  }).join('');
+  list.classList.add('open');
+}
+
+function selectMaterial(type, ref, price, unit, name) {
+  if (type === 'ht') {
+    document.getElementById('f-mat-ref').value = ref;
+    if (price) document.getElementById('f-mat-cost').value = price;
+    // Try to extract GSM from reference (e.g. FSC350... = 350gsm)
+    const gsmMatch = ref.match(/^FSC(\d{2,3})/i) || ref.match(/(\d{3})\s*g/i);
+    if (gsmMatch) document.getElementById('f-gsm').value = parseInt(gsmMatch[1]);
+  } else {
+    document.getElementById('pf-mat-ref').value = ref;
+    if (price) document.getElementById('pf-mat-cost').value = price;
+  }
+  // Close dropdown
+  document.getElementById('ac-' + type + '-list').classList.remove('open');
+  recalcAll();
+}
+
+// Close autocomplete on click outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.mat-ac-wrap')) {
+    document.querySelectorAll('.mat-ac-list').forEach(l => l.classList.remove('open'));
+  }
+});
 
 // ══════════════════════════════════════════════════════════
 // RESET ALL
