@@ -33,7 +33,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .page-sub{font-size:.78rem;color:var(--label);margin-bottom:24px;line-height:1.5}
 
 /* CARDS */
-.card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow)}
+#card-materials{overflow:visible}
 .card-head{background:#2a2a2a;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .card-head h3{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ccc}
 .card-head .card-tag{font-family:'Space Mono',monospace;font-size:.72rem;color:#aaa;letter-spacing:.08em}
@@ -138,7 +139,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .img-upload-area .placeholder{font-size:.72rem;color:#aaa}
 
 /* TWO-COLUMN LAYOUT */
-.s3-wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.s3-wrap{display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start}
 
 /* MACHINE CHECKLIST */
 .machine-list{display:flex;flex-direction:column;gap:2px;max-height:420px;overflow-y:auto}
@@ -159,6 +160,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .mach-setup-inp{font-family:'Space Mono',monospace;font-size:.68rem;font-weight:500;color:var(--input-text);border:1.5px solid var(--border);border-radius:2px;padding:3px 6px;width:55px;text-align:center;background:#fff}
 .mach-setup-inp:disabled{background:#eee;color:#bbb;border-color:#ddd;cursor:not-allowed}
 .mach-setup-inp:focus{outline:none;border-color:var(--red)}
+/* Digital click cost row */
+.digital-click-row{display:none;grid-column:1/-1;padding:4px 10px 8px 28px;background:#f8f4ff;border:1px solid #e0d4f0;border-radius:2px;margin:2px 0;font-size:.68rem;align-items:center;gap:8px}
+.digital-click-row.show{display:flex}
+.digital-click-row label{font-weight:600;color:var(--label);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase}
+.digital-click-row select,.digital-click-row input{font-family:'Space Mono',monospace;font-size:.72rem;padding:3px 6px;border:1.5px solid var(--border);border-radius:2px;background:#fff}
+.digital-click-row select:focus,.digital-click-row input:focus{outline:none;border-color:var(--red)}
 /* HT grid: checkbox, name, setup, oneHit, sheetsSetup */
 .ht-mach-hdr{grid-template-columns:20px 1fr 75px 75px 65px}
 .ht-mach-row{grid-template-columns:20px 1fr 75px 75px 65px}
@@ -167,15 +174,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .pfl-mach-row{grid-template-columns:20px 1fr 70px 70px 50px 50px 55px}
 
 /* TECH PANEL */
-.tech-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:56px}
-.tech-card-head{background:#2a2a2a;padding:9px 14px;display:flex;align-items:center;justify-content:space-between}
+.tech-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:56px;max-height:calc(100vh - 72px);display:flex;flex-direction:column}
+.tech-card-head{background:#2a2a2a;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .tech-card-head h3{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ccc}
-.tech-card-body{padding:12px 14px}
+.tech-card-body{padding:12px 14px;overflow-y:auto;flex:1}
 .tech-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid #f0f0f0}
 .tech-row:last-child{border-bottom:none}
 .tech-lbl{font-size:.68rem;color:var(--label);flex:1;line-height:1.3}
 .tech-val{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:500;color:var(--input-text);background:var(--calc);border:1px solid var(--calc-border);padding:3px 8px;border-radius:2px;min-width:72px;text-align:right;white-space:nowrap}
 .tech-section{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#bbb;padding:8px 0 4px}
+/* Tech panel input fields */
+.tech-grid{display:grid;gap:6px 8px;margin-bottom:4px}
+.tech-grid-2{grid-template-columns:1fr 1fr}
+.tech-grid-3{grid-template-columns:1fr 1fr 1fr}
+.tech-f{display:flex;flex-direction:column;gap:2px}
+.tech-f label{font-size:.55rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--label);line-height:1}
+.tech-f input{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:500;color:var(--input-text);background:#fff;border:1.5px solid var(--border);border-radius:2px;padding:4px 6px;width:100%;text-align:center;-webkit-appearance:none}
+.tech-f input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(226,27,27,0.08)}
+.tech-f input.calc{background:var(--calc);border-color:var(--calc-border);color:#2a4a80;cursor:default}
+.tech-f .t-unit{font-size:.5rem;color:#999;text-align:center;margin-top:-1px}
+.tech-calc-box{background:var(--calc);border:1px solid var(--calc-border);border-radius:3px;padding:8px 10px;margin:4px 0}
+.tech-calc-row{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:3px 0}
+.tech-calc-row.bold{font-weight:700;border-top:1px solid var(--calc-border);padding-top:6px;margin-top:4px}
+.tech-calc-lbl{font-size:.62rem;color:var(--label)}
+.tech-calc-val{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:600;color:var(--input-text)}
 
 /* COST TABLE */
 .cost-outer{display:grid;grid-template-columns:160px 1fr;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -313,6 +335,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .mat-pagination button:disabled{opacity:.4;cursor:not-allowed}
 .mat-pagination span{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--label)}
 
+/* MATERIAL SELECTOR TABLE */
+.mat-sel-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-bottom:8px}
+.mat-sel-table thead tr{background:#f8f8f8}
+.mat-sel-table th{padding:6px 8px;text-align:left;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa;border-bottom:1px solid #eee}
+.mat-sel-table th.r{text-align:right}
+.mat-sel-table td{padding:5px 8px;border-bottom:1px solid #f4f4f4;vertical-align:middle}
+.mat-sel-table td.mono{font-family:'Space Mono',monospace;color:var(--input-text);font-size:.68rem}
+.mat-sel-table td.r{text-align:right}
+.mat-sel-table .quo-price-input{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:600;color:var(--input-text);border:1.5px solid var(--border);border-radius:2px;padding:3px 6px;width:80px;text-align:right;background:#fff}
+.mat-sel-table .quo-price-input:focus{outline:none;border-color:var(--red)}
+.mat-sel-table .quo-price-input.overridden{border-color:#f59e0b;background:#fffbeb}
+.mat-sel-table .cat-price{font-family:'Space Mono',monospace;font-size:.65rem;color:#aaa}
+.unit-badge{display:inline-block;font-size:.5rem;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:2px;text-transform:uppercase}
+.unit-badge.sheet{background:rgba(59,130,246,0.1);color:#2563eb}
+.unit-badge.m{background:rgba(34,197,94,0.1);color:#16a34a}
+.unit-badge.pcs{background:rgba(245,158,11,0.1);color:#d97706}
+.unit-badge.other{background:#f0f0f0;color:#888}
+.mat-sel-total{font-size:.72rem;font-weight:600;color:var(--label);padding:6px 0;display:flex;align-items:center;justify-content:space-between}
+.mat-sel-total .total-val{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;color:var(--input-text)}
+.mat-sel-empty{text-align:center;padding:20px;color:#ccc;font-size:.78rem}
+.mat-add-wrap{position:relative;z-index:200}
+.mat-search-dropdown{display:none;position:absolute;top:100%;left:0;right:0;max-height:400px;background:#fff;border:1.5px solid var(--border);border-top:none;border-radius:0 0 4px 4px;box-shadow:0 12px 36px rgba(0,0,0,0.22);z-index:200;flex-direction:column;overflow-y:auto}
+.mat-search-dropdown.open{display:flex}
+.mat-search-item{padding:7px 10px;font-size:.72rem;cursor:pointer;display:grid;grid-template-columns:1fr auto auto;gap:4px 8px;align-items:center;border-bottom:1px solid #f4f4f4}
+.mat-search-item:hover{background:var(--red-light)}
+.mat-search-item .sr-name{font-weight:600;color:var(--dark);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;grid-column:1}
+.mat-search-item .sr-ref{font-family:'Space Mono',monospace;color:#999;font-size:.6rem;grid-column:1;margin-top:-2px}
+.mat-search-item .sr-price{font-family:'Space Mono',monospace;font-weight:600;color:var(--red);white-space:nowrap;font-size:.68rem}
+.mat-search-item .sr-unit{justify-self:end}
+
 /* MATERIAL AUTOCOMPLETE */
 .mat-ac-wrap{position:relative}
 .mat-ac-wrap input{width:100%}
@@ -323,6 +375,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .mat-ac-item .ac-ref{font-family:'Space Mono',monospace;font-weight:600;color:var(--input-text)}
 .mat-ac-item .ac-name{color:var(--label);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mat-ac-item .ac-price{font-family:'Space Mono',monospace;font-weight:600;color:var(--red);white-space:nowrap}
+
+/* IMPORT MODAL */
+.import-modal-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
+.import-modal-overlay.open{display:flex}
+.import-modal{background:#fff;border-radius:8px;width:900px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,0.25)}
+.import-modal-head{background:#2a2a2a;padding:14px 20px;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between}
+.import-modal-head h3{font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#ccc}
+.import-modal-head .step-indicator{font-family:'Space Mono',monospace;font-size:.68rem;color:#888}
+.import-modal-body{padding:20px;overflow-y:auto;flex:1}
+.import-modal-foot{padding:14px 20px;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.import-close-btn{background:transparent;border:none;color:#888;font-size:1.2rem;cursor:pointer;padding:4px 8px}
+.import-close-btn:hover{color:#fff}
+.mapping-table{width:100%;border-collapse:collapse;margin:12px 0}
+.mapping-table th{padding:8px 10px;text-align:left;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa;background:#f8f8f8;border-bottom:2px solid #eee}
+.mapping-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.mapping-table select{font-family:'Space Mono',monospace;font-size:.75rem;padding:5px 8px;border:1.5px solid var(--border);border-radius:2px;width:100%;background:#fff}
+.mapping-table select:focus{outline:none;border-color:var(--red)}
+.mapping-table .field-required{color:var(--red);font-weight:700}
+.mapping-table .field-optional{color:#aaa}
+.mapping-table .field-mapped{color:var(--green);font-weight:600}
+.mapping-table .field-unmapped{color:var(--red);font-weight:600}
+.preview-table{width:100%;border-collapse:collapse;font-size:.68rem;margin:8px 0}
+.preview-table th{padding:6px 8px;background:#f4f4f4;text-align:left;font-weight:700;color:var(--label);border-bottom:1px solid #ddd}
+.preview-table td{padding:5px 8px;border-bottom:1px solid #f0f0f0;font-family:'Space Mono',monospace;color:var(--input-text);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.import-warning{background:#fff3e0;border:1px solid #ffb74d;border-radius:4px;padding:12px 16px;margin:12px 0;font-size:.78rem;color:#e65100}
+.import-warning strong{display:block;margin-bottom:4px}
+.import-success{background:#e8f5e9;border:1px solid #81c784;border-radius:4px;padding:12px 16px;margin:12px 0;font-size:.78rem;color:#2e7d32}
+.import-error-list{background:#fbe9e7;border:1px solid #ef9a9a;border-radius:4px;padding:12px 16px;margin:12px 0;font-size:.72rem;color:#c62828;max-height:150px;overflow-y:auto}
+.import-error-list ul{margin:6px 0 0 16px;list-style:disc}
+.import-stat{display:inline-block;background:var(--calc);border:1px solid var(--calc-border);border-radius:3px;padding:4px 10px;font-family:'Space Mono',monospace;font-size:.78rem;font-weight:600;color:var(--input-text);margin:4px 4px 4px 0}
+/* IMPORT HISTORY TABLE */
+.import-history-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-top:12px}
+.import-history-table thead tr{background:#2a2a2a}
+.import-history-table th{padding:8px 10px;text-align:left;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.import-history-table td{padding:6px 10px;border-bottom:1px solid #f0f0f0;font-size:.72rem}
 
 @media print{.no-print,.logo-area{display:none!important}.page{padding:0!important}body{background:#fff}}
 </style>
@@ -368,48 +455,69 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 <button class="topbar-logout-btn no-print" onclick="doLogout()">Logout</button>
 <button class="topbar-settings-btn no-print" id="settings-btn" onclick="openSettings()" style="display:none">Settings</button>
 
-<!-- PAGE 1: CONFIGURATION -->
+<!-- PAGE 1: CONFIGURATION (progressive reveal) -->
 <div class="page active" id="page-1">
-  <div class="page-sub">Select the country, product line and quotation type to continue.</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:8px;">
-    <div>
+  <div class="page-sub">Select the country to begin a new quotation.</div>
+  <div style="max-width:820px;margin:0 auto">
+    <!-- STEP A: Country -->
+    <div id="p1-country" style="margin-bottom:24px">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Country</div>
       <select id="country-select" class="country-dropdown" onchange="selectCountry(this.value)">
         <option value="">— Select —</option>
       </select>
     </div>
-    <div>
+    <!-- STEP B: Product Line (hidden until country selected) -->
+    <div id="p1-line" style="display:none;margin-bottom:24px">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Product Line</div>
-      <div class="tiles" style="display:flex;flex-direction:column;gap:8px;" id="tiles-line">
-        <div class="tile" data-group="line" data-val="Soft Line" onclick="selTile(this)">
+      <div class="tiles" style="display:flex;gap:12px;" id="tiles-line">
+        <div class="tile" style="flex:1" data-group="line" data-val="Soft Line" onclick="selTile(this)">
           <div class="tile-check">&#10003;</div>
           <div class="tile-name">Soft Line</div>
         </div>
-        <div class="tile" data-group="line" data-val="RFID" onclick="selTile(this)">
+        <div class="tile" style="flex:1" data-group="line" data-val="RFID" onclick="selTile(this)">
           <div class="tile-check">&#10003;</div>
           <div class="tile-name">RFID</div>
         </div>
       </div>
     </div>
-    <div>
+    <!-- STEP C: Quotation Type (hidden until line selected) -->
+    <div id="p1-type" style="display:none;margin-bottom:24px">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Quotation Type</div>
-      <div class="tiles" style="display:flex;flex-direction:column;gap:8px;" id="tiles-type">
-        <div class="tile" data-group="type" data-val="HT" onclick="selTile(this)">
+      <div class="tiles" style="display:flex;gap:12px;" id="tiles-type">
+        <div class="tile" style="flex:1" data-group="type" data-val="HT" onclick="selTile(this)">
           <div class="tile-check">&#10003;</div>
           <div class="tile-name">HT — Hang Tag</div>
         </div>
-        <div class="tile" data-group="type" data-val="PFL" onclick="selTile(this)">
+        <div class="tile" style="flex:1" data-group="type" data-val="PFL" onclick="selTile(this)">
           <div class="tile-check">&#10003;</div>
           <div class="tile-name">PFL — Printed Fabric Label</div>
         </div>
-        <div class="tile" data-group="type" data-val="TTR" onclick="selTile(this)">
+        <div class="tile" style="flex:1" data-group="type" data-val="TTR" onclick="selTile(this)">
           <div class="tile-check">&#10003;</div>
           <div class="tile-name">TTR — Roll Form</div>
         </div>
       </div>
     </div>
+    <!-- STEP D: HT Technology (hidden, only shown when HT selected) -->
+    <div id="p1-ht-tech" style="display:none;margin-bottom:24px">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:10px;">Printing Technology</div>
+      <div class="tiles" style="display:flex;gap:12px;" id="tiles-ht-tech">
+        <div class="tile" style="flex:1" data-group="htTech" data-val="Offset" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">Offset</div>
+        </div>
+        <div class="tile" style="flex:1" data-group="htTech" data-val="Digital" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">Digital</div>
+        </div>
+        <div class="tile" style="flex:1" data-group="htTech" data-val="Inkjet" onclick="selTile(this)">
+          <div class="tile-check">&#10003;</div>
+          <div class="tile-name">Inkjet</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="err" id="err-1">Please select a country, product line and quotation type to continue.</div>
+  <div class="err" id="err-1">Please complete all selections to continue.</div>
 </div>
 
 <!-- PAGE 2: QUOTATION DETAILS -->
@@ -449,124 +557,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
         </div>
       </div>
 
-      <!-- HT: RAW MATERIAL -->
-      <div class="card ht-only" id="card-ht-material">
-        <div class="card-head"><h3>Raw Material</h3><span class="card-tag">Paper / Substrate</span></div>
+      <!-- RAW MATERIALS (multi-material selector, shared HT/PFL) -->
+      <div class="card" id="card-materials">
+        <div class="card-head"><h3>Raw Materials</h3><span class="card-tag">From catalog</span></div>
         <div class="card-body">
-          <div class="fg fg-3">
-            <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
-              <div class="mat-ac-wrap">
-                <input type="text" id="f-mat-ref" placeholder="e.g. FSC32596X76WHMBNTR" autocomplete="off" oninput="materialAutocomplete(this,'ht')" onfocus="materialAutocomplete(this,'ht')">
-                <div class="mat-ac-list" id="ac-ht-list"></div>
-              </div></div>
-            <div class="f"><label>GSM (grams/m2)</label>
-              <div class="input-unit"><input type="number" id="f-gsm" value="325" min="1" oninput="recalcAll()"><span class="unit">gsm</span></div></div>
-            <div class="f"><label>Cost / Sheet <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="f-mat-cost" placeholder="0.37" step="0.001" min="0" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
-            <div class="f"><label>FRT (Freight incl.?)</label>
-              <select id="f-mat-frt"><option value="yes">Yes</option><option value="no">No</option></select></div>
-            <div class="f"><label>Material % of sheet</label>
-              <div class="input-unit"><input type="number" id="f-mat-pct" value="100" min="1" max="100" oninput="recalcAll()"><span class="unit">%</span></div></div>
+          <div id="mat-sel-wrap"></div>
+          <div class="mat-sel-total">
+            <span>Total material cost per label</span>
+            <span class="total-val" id="mat-total-val">EUR 0.0000</span>
           </div>
-        </div>
-      </div>
-
-      <!-- PFL: RAW MATERIAL -->
-      <div class="card pfl-only" id="card-pfl-material">
-        <div class="card-head"><h3>Material</h3><span class="card-tag">Fabric / Substrate</span></div>
-        <div class="card-body">
-          <div class="fg fg-3">
-            <div class="f col-span-2"><label>Material Reference <span class="req">*</span></label>
-              <div class="mat-ac-wrap">
-                <input type="text" id="pf-mat-ref" placeholder="e.g. Etilabel satin" autocomplete="off" oninput="materialAutocomplete(this,'pfl')" onfocus="materialAutocomplete(this,'pfl')">
-                <div class="mat-ac-list" id="ac-pfl-list"></div>
-              </div></div>
-            <div class="f"><label>Cost / Unit <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="pf-mat-cost" placeholder="0.0076" step="0.0001" min="0" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
-            <div class="f"><label>Material Waste %</label>
-              <div class="input-unit"><input type="number" id="pf-mat-waste" value="1" min="0" max="100" step="0.1" oninput="recalcAll()"><span class="unit">%</span></div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HT: LABEL SIZE & INKS -->
-      <div class="card ht-only" id="card-ht-label">
-        <div class="card-head"><h3>Label Size &amp; Inks</h3><span class="card-tag">Product dimensions</span></div>
-        <div class="card-body">
-          <div class="fg fg-4">
-            <div class="f"><label>Width (mm) <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="f-width" placeholder="60" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-            <div class="f"><label>Length (mm) <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="f-length" placeholder="75" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-            <div class="f"><label>Front Inks <span class="req">*</span></label>
-              <input type="number" id="f-front-inks" placeholder="1" min="0" max="8" oninput="recalcAll()"></div>
-            <div class="f"><label>Back Inks</label>
-              <input type="number" id="f-back-inks" placeholder="0" min="0" max="8" oninput="recalcAll()"></div>
-            <div class="f"><label>Variable Data Front</label>
-              <input type="number" id="f-vd-front" placeholder="0" min="0" max="8"></div>
-            <div class="f"><label>Variable Data Back</label>
-              <input type="number" id="f-vd-back" placeholder="0" min="0" max="8"></div>
-            <div class="f"><label>Label Weight (g)</label>
-              <input type="text" id="f-weight" class="calc" readonly></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HT: SHEET SIZES -->
-      <div class="card ht-only" id="card-ht-sheets">
-        <div class="card-head"><h3>Sheet Sizes</h3><span class="card-tag">Raw material / Printing format</span></div>
-        <div class="card-body">
-          <div class="sub-area">
-            <div class="sub-area-title">1 - Raw Material Sheet <span>cost per sheet applied here</span></div>
-            <div class="fg fg-4">
-              <div class="f"><label>Width (mm) <span class="req">*</span></label>
-                <div class="input-unit"><input type="number" id="f-raw-w" placeholder="960" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-              <div class="f"><label>Length (mm) <span class="req">*</span></label>
-                <div class="input-unit"><input type="number" id="f-raw-l" placeholder="760" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
+          <div class="mat-add-wrap" style="width:100%">
+            <div style="position:relative">
+              <input type="text" id="mat-search-q" class="mat-search" style="width:100%" placeholder="Type material name to add..." oninput="filterMaterialSearch()" onfocus="filterMaterialSearch()" autocomplete="off">
+              <div class="mat-search-dropdown" id="mat-search-dropdown">
+                <div class="mat-search-results" id="mat-search-results"></div>
+              </div>
             </div>
           </div>
-          <div class="sub-area">
-            <div class="sub-area-title">2 - Printing Format <span>sheet fed into the press</span></div>
-            <div class="fg fg-4">
-              <div class="f"><label>Width (mm) <span class="req">*</span></label>
-                <div class="input-unit"><input type="number" id="f-sheet-w" placeholder="480" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-              <div class="f"><label>Length (mm) <span class="req">*</span></label>
-                <div class="input-unit"><input type="number" id="f-sheet-l" placeholder="380" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-              <div class="f"><label>Gap Row (mm)</label>
-                <input type="number" id="f-gap-r" value="5" min="0" oninput="recalcAll()"></div>
-              <div class="f"><label>Gap Col (mm)</label>
-                <input type="number" id="f-gap-c" value="5" min="0" oninput="recalcAll()"></div>
+          <!-- PFL waste % — only visible in PFL mode -->
+          <div class="pfl-only" style="margin-top:10px">
+            <div class="fg fg-3">
+              <div class="f"><label>Material Waste %</label>
+                <div class="input-unit"><input type="number" id="pf-mat-waste" value="1" min="0" max="100" step="0.1" oninput="recalcAll()"><span class="unit">%</span></div></div>
             </div>
-          </div>
-          <div class="sub-area">
-            <div class="sub-area-title">3 - Calculated Layout <span>auto from sizes above</span></div>
-            <div class="fg fg-4">
-              <div class="f"><label>Formats / raw sheet</label><input type="text" id="f-sheet-parts" class="calc" readonly></div>
-              <div class="f"><label>Labels / format</label><input type="text" id="f-lpf" class="calc" readonly></div>
-              <div class="f"><label>Labels / raw sheet</label><input type="text" id="f-labels-per-raw" class="calc" readonly></div>
-              <div class="f"><label>Raw sheets / 1000</label><input type="text" id="f-raw-per-1000" class="calc" readonly></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PFL: LABEL SIZE -->
-      <div class="card pfl-only" id="card-pfl-label">
-        <div class="card-head"><h3>Label Size</h3><span class="card-tag">Dimensions &amp; layout</span></div>
-        <div class="card-body">
-          <div class="fg fg-4">
-            <div class="f"><label>Width (mm) <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="pf-width" placeholder="10" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-            <div class="f"><label>Length (mm) <span class="req">*</span></label>
-              <div class="input-unit"><input type="number" id="pf-length" placeholder="70" min="1" oninput="recalcAll()"><span class="unit">mm</span></div></div>
-            <div class="f"><label>Units / Row <span class="req">*</span></label>
-              <input type="number" id="pf-upr" placeholder="3" min="1" oninput="recalcAll()"></div>
-            <div class="f"><label>Units / Column</label>
-              <input type="number" id="pf-upc" placeholder="4" min="1" oninput="recalcAll()"></div>
-            <div class="f"><label>Front Inks</label>
-              <input type="number" id="pf-front-inks" placeholder="1" min="0" max="8"></div>
-            <div class="f"><label>Back Inks</label>
-              <input type="number" id="pf-back-inks" placeholder="0" min="0" max="8"></div>
           </div>
         </div>
       </div>
@@ -811,10 +824,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
       </div>
       <!-- RAW MATERIALS -->
       <div class="settings-section" id="tab-materials">
+        <!-- IMPORT SECTION -->
+        <div style="background:#fff;border:1px solid var(--border-light);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:12px">
+              <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label)">Country:</label>
+              <select id="settings-mat-country" class="country-dropdown" style="font-size:.82rem;padding:8px 34px 8px 12px;width:auto;min-width:160px" onchange="switchMaterialCountry(this.value)"></select>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="save-ok" id="materials-saved">Saved</span>
+              <label class="mat-upload-btn" style="cursor:pointer">
+                Upload Excel
+                <input type="file" id="mat-upload-input" accept=".xlsx,.xls" style="display:none" onchange="handleMaterialsUpload(event)">
+              </label>
+              <button class="btn btn-dark" style="background:#8b1a1a" onclick="clearAllMaterials()">Clear All</button>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:.72rem;color:var(--label)" id="mat-import-info">No import data.</div>
+        </div>
+        <!-- CATALOG TABLE -->
         <div class="settings-save-row">
           <div class="mat-toolbar">
-            <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--label)">Country:</label>
-            <select id="settings-mat-country" class="country-dropdown" style="font-size:.82rem;padding:8px 34px 8px 12px;width:auto;min-width:160px" onchange="switchMaterialCountry(this.value)"></select>
             <select id="mat-type-filter" class="mat-filter" onchange="renderMaterialsTable()">
               <option value="">All Types</option>
               <option value="PAPER">Paper</option>
@@ -833,20 +863,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
               <option value="RM">RM only</option>
               <option value="FG">FG only</option>
             </select>
+            <select id="mat-line-filter" class="mat-filter" onchange="renderMaterialsTable()">
+              <option value="">All Lines</option>
+              <option value="SL">SL</option>
+              <option value="RFID">RFID</option>
+            </select>
             <input type="text" id="mat-search-input" class="mat-search" placeholder="Search reference or name..." oninput="renderMaterialsTable()">
-          </div>
-          <div style="display:flex;align-items:center;gap:12px">
             <span class="mat-count" id="mat-count"></span>
-            <span class="save-ok" id="materials-saved">Saved</span>
-            <label class="mat-upload-btn" style="cursor:pointer">
-              Upload Excel
-              <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleMaterialsUpload(event)">
-            </label>
-            <button class="btn btn-dark" style="background:#8b1a1a" onclick="clearAllMaterials()">Clear All</button>
           </div>
         </div>
         <div id="mat-table-wrap"></div>
         <div class="mat-pagination" id="mat-pagination"></div>
+        <!-- IMPORT HISTORY -->
+        <div style="margin-top:20px">
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--label);margin-bottom:8px">Import History</div>
+          <div id="mat-import-history"></div>
+        </div>
       </div>
       <!-- ADMIN SECTION -->
       <div class="settings-section" id="tab-admin">
@@ -879,6 +911,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="import-modal-overlay" id="import-modal">
+  <div class="import-modal">
+    <div class="import-modal-head">
+      <h3>Import Materials</h3>
+      <span class="step-indicator" id="import-step-label">Step 1 of 3</span>
+      <button class="import-close-btn" onclick="closeImportModal()">&times;</button>
+    </div>
+    <div class="import-modal-body" id="import-modal-body"></div>
+    <div class="import-modal-foot" id="import-modal-foot"></div>
   </div>
 </div>
 
@@ -966,6 +1011,14 @@ function loadCountryForQuotation(name){
 function selectCountry(name){
   S.country=name||null;
   if(name) loadCountryForQuotation(name);
+  // Progressive reveal: show Product Line
+  const lineDiv=document.getElementById('p1-line');
+  if(lineDiv) lineDiv.style.display=name?'':'none';
+  // If country cleared, hide line and type too
+  if(!name){
+    const typeDiv=document.getElementById('p1-type');
+    if(typeDiv) typeDiv.style.display='none';
+  }
   if(S.country&&S.line&&S.type) setTimeout(()=>goStep(2),200);
 }
 
@@ -1084,9 +1137,10 @@ function saveUsers(){flashSave('admin-saved');}
 // ══════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════
-const S = {line:null, type:null, country:null};
+const S = {line:null, type:null, country:null, htTech:null};
 let tech = {};
 let productImageData = null;
+let selectedMaterials = []; // {materialId, itemNumber, itemName, unit, catalogPrice, quotationPrice, isOverridden}
 
 // ══════════════════════════════════════════════════════════
 // NAVIGATION
@@ -1114,7 +1168,30 @@ function selTile(tile){
   document.querySelectorAll(`[data-group="${g}"]`).forEach(t=>t.classList.remove('sel'));
   tile.classList.add('sel');
   S[g]=tile.dataset.val;
-  if(S.country&&S.line&&S.type) setTimeout(()=>goStep(2),200);
+  // Progressive reveal
+  if(g==='line'){
+    document.getElementById('p1-type').style.display='';
+  }
+  if(g==='type'){
+    const htTechDiv=document.getElementById('p1-ht-tech');
+    if(S.type==='HT'){
+      htTechDiv.style.display='';
+      // Clear previous htTech selection when switching to HT
+      if(!S.htTech){
+        document.querySelectorAll('[data-group="htTech"]').forEach(t=>t.classList.remove('sel'));
+      }
+      return; // Don't proceed yet — need htTech
+    } else {
+      htTechDiv.style.display='none';
+      S.htTech=null;
+    }
+  }
+  if(g==='htTech'){
+    // HT technology selected — now can proceed
+  }
+  // Proceed: for HT need htTech too, for others just country+line+type
+  const ready=S.country&&S.line&&S.type&&(S.type!=='HT'||S.htTech);
+  if(ready) setTimeout(()=>goStep(2),300);
 }
 
 function applyTypeVisibility(){
@@ -1123,11 +1200,12 @@ function applyTypeVisibility(){
   page2.classList.remove('mode-ht','mode-pfl');
   page2.classList.add(isHT?'mode-ht':'mode-pfl');
   document.getElementById('page2-sub').textContent = isHT
-    ? 'HT Quotation: fill in label specs, sheet layout, machines and quantities.'
-    : 'PFL Quotation: fill in label specs, material, machines and quantities.';
+    ? 'HT Quotation: fill in product, materials, machines and quantities. Technical panel on the right.'
+    : 'PFL Quotation: fill in product, materials, machines and quantities. Technical panel on the right.';
   buildMachineList();
   renderCostLabels();
   renderTechPanel();
+  renderSelectedMaterials();
   recalcAll();
 }
 
@@ -1167,17 +1245,52 @@ function buildMachineList(){
   const list=document.getElementById(listId);
   if(!list)return;
   list.innerHTML='';
+  // For HT: filter by selected printing technology
+  const htTech=S.htTech?S.htTech.toLowerCase():null;
   machines.forEach((m,i)=>{
+    // Filter: show machine if common, or matches selected technology
+    if(isHT&&htTech){
+      const mTech=(m.technology||'common').toLowerCase();
+      if(mTech!=='common'&&mTech!==htTech) return; // skip
+    }
     const row=document.createElement('div');
     row.className='mach-item '+(isHT?'ht-mach-row':'pfl-mach-row');
     row.id=(isHT?'hmi-':'pmi-')+i;
     if(isHT){
+      const isDigital=(m.technology||'').toLowerCase()==='digital';
       row.innerHTML=`
         <div class="mach-cb" id="hcb-${i}"></div>
-        <div class="mach-name">${m.name}</div>
+        <div class="mach-name">${m.name}${isDigital?' <span style="font-size:.5rem;color:#7c3aed;font-weight:700;letter-spacing:.06em">DIGITAL</span>':''}</div>
         <div class="mach-val">${m.setup.toFixed(4)}</div>
         <div class="mach-val">${m.oneHit.toFixed(6)}</div>
         <input class="mach-setup-inp" id="hsi-${i}" type="number" value="${m.sheetsSetup}" min="0" disabled onclick="event.stopPropagation()" oninput="recalcAll()">`;
+      if(isDigital){
+        const clickRow=document.createElement('div');
+        clickRow.className='digital-click-row';
+        clickRow.id='dclick-'+i;
+        clickRow.innerHTML=`
+          <label>Konica</label>
+          <select id="dclick-konica-${i}" onchange="updateDigitalClickFromPreset(${i},'konica')" onclick="event.stopPropagation()">
+            <option value="0">None</option>
+            <option value="0.11">White (\u20AC0.11)</option>
+            <option value="0.0095">Black (\u20AC0.0095)</option>
+            <option value="0.0261">Color (\u20AC0.0261)</option>
+            <option value="0.22">Plus White (\u20AC0.22)</option>
+            <option value="0.019">Plus Black (\u20AC0.019)</option>
+            <option value="0.0522">Plus Color (\u20AC0.0522)</option>
+          </select>
+          <label>OKI</label>
+          <select id="dclick-oki-${i}" onchange="updateDigitalClickFromPreset(${i},'oki')" onclick="event.stopPropagation()">
+            <option value="0">None</option>
+            <option value="0.011">Black (\u20AC0.011)</option>
+            <option value="0.04">Color (\u20AC0.04)</option>
+          </select>`;
+        // Insert after the row
+        row.onclick=()=>toggleMachine('ht',i);
+        list.appendChild(row);
+        list.appendChild(clickRow);
+        return; // skip the default onclick/appendChild below
+      }
     } else {
       row.innerHTML=`
         <div class="mach-cb" id="pcb-${i}"></div>
@@ -1197,6 +1310,12 @@ function toggleMachine(type,i){
   const pre=type==='ht'?'hmi':'pmi';
   const row=document.getElementById(pre+'-'+i);
   const checked=row.classList.toggle('checked');
+  // Show/hide digital click cost row
+  const clickRow=document.getElementById('dclick-'+i);
+  if(clickRow){
+    if(checked) clickRow.classList.add('show');
+    else clickRow.classList.remove('show');
+  }
   if(type==='ht'){
     document.getElementById('hsi-'+i).disabled=!checked;
   } else {
@@ -1207,6 +1326,10 @@ function toggleMachine(type,i){
   recalcAll();
 }
 
+function updateDigitalClickFromPreset(machIdx, type){
+  recalcAll();
+}
+
 function getCheckedMachines(type){
   const machines=type==='ht'?HT_MACHINES:PFL_MACHINES;
   const pre=type==='ht'?'hmi':'pmi';
@@ -1214,7 +1337,11 @@ function getCheckedMachines(type){
     const row=document.getElementById(pre+'-'+i);
     if(!row||!row.classList.contains('checked'))return null;
     if(type==='ht'){
-      return{...m,sheetsSetup:parseInt(document.getElementById('hsi-'+i).value)||0,idx:i};
+      const konicaSel=document.getElementById('dclick-konica-'+i);
+      const okiSel=document.getElementById('dclick-oki-'+i);
+      const konicaClick=konicaSel?parseFloat(konicaSel.value)||0:(m.konicaClickCost||0);
+      const okiClick=okiSel?parseFloat(okiSel.value)||0:(m.okiClickCost||0);
+      return{...m,sheetsSetup:parseInt(document.getElementById('hsi-'+i).value)||0,idx:i,konicaClick,okiClick};
     } else {
       return{...m,
         frontMult:parseFloat(document.getElementById('pfr-'+i).value)||1,
@@ -1226,45 +1353,88 @@ function getCheckedMachines(type){
 }
 
 // ══════════════════════════════════════════════════════════
-// TECH PANEL
+// TECH PANEL (with input fields — spec §4)
 // ══════════════════════════════════════════════════════════
 function renderTechPanel(){
   const body=document.getElementById('tech-body');
   if(S.type==='HT'){
     body.innerHTML=`
-      <div class="tech-section">Label Layout on Printing Format</div>
-      <div class="tech-row"><span class="tech-lbl">Pieces / row</span><span class="tech-val" id="t-prow">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Pieces / column</span><span class="tech-val" id="t-pcol">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Labels / printing format</span><span class="tech-val" id="t-pps">--</span></div>
-      <div class="tech-section">Raw Sheet Breakdown</div>
-      <div class="tech-row"><span class="tech-lbl">Formats / raw sheet</span><span class="tech-val" id="t-psms">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Gap row / col</span><span class="tech-val" id="t-gaps">--</span></div>
-      <div class="tech-section">Dimensions</div>
-      <div class="tech-row"><span class="tech-lbl">Label W x L</span><span class="tech-val" id="t-htw">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Raw sheet W x L</span><span class="tech-val" id="t-htl">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Print format W x L</span><span class="tech-val" id="t-psw">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Effective area W x L</span><span class="tech-val" id="t-psl">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Paper GSM</span><span class="tech-val" id="t-gsm">325</span></div>
-      <div class="tech-section">Inks &amp; Weight</div>
-      <div class="tech-row"><span class="tech-lbl">Front / Back inks</span><span class="tech-val" id="t-inks">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Label weight</span><span class="tech-val" id="t-wt">--</span></div>
-      <div class="tech-section">Paper Cost Preview</div>
-      <div class="tech-row"><span class="tech-lbl">Labels / raw sheet</span><span class="tech-val" id="t-sn">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Raw sheets / 1000</span><span class="tech-val" id="t-pc">--</span></div>`;
+      <div class="tech-section">1 — Label Dimensions</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Width</label><input type="number" id="f-width" placeholder="60" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Height</label><input type="number" id="f-length" placeholder="75" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+      </div>
+      <div class="tech-section">2 — Raw Sheet Size</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Width</label><input type="number" id="f-raw-w" placeholder="640" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Height</label><input type="number" id="f-raw-l" placeholder="900" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+      </div>
+      <div class="tech-grid" style="grid-template-columns:1fr;margin-top:4px">
+        <div class="tech-f"><label>Paper GSM</label><input type="number" id="f-gsm" value="325" min="1" oninput="recalcAll()"><div class="t-unit">gsm</div></div>
+      </div>
+      <div class="tech-section">3 — Print Sheet Size</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Width</label><input type="number" id="f-print-w" placeholder="480" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Height</label><input type="number" id="f-print-l" placeholder="380" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+      </div>
+      <div class="tech-section">4 — Margins &amp; Gaps <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#999">(on print sheet)</span></div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Gripper</label><input type="number" id="f-gripper" placeholder="10" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Counter-grip</label><input type="number" id="f-counter-grip" placeholder="5" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Left margin</label><input type="number" id="f-margin-l" placeholder="5" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Right margin</label><input type="number" id="f-margin-r" placeholder="5" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>H. gap</label><input type="number" id="f-h-gap" placeholder="2" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>V. gap</label><input type="number" id="f-v-gap" placeholder="2" min="0" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+      </div>
+      <div class="tech-section">5 — Design Inks</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Front</label><input type="number" id="f-front-inks" placeholder="1" min="0" max="8" oninput="recalcAll()"></div>
+        <div class="tech-f"><label>Back</label><input type="number" id="f-back-inks" placeholder="0" min="0" max="8" oninput="recalcAll()"></div>
+      </div>
+      <div class="tech-section">6 — Variable Data Inks</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Front</label><input type="number" id="f-vd-front" placeholder="0" min="0" max="8"></div>
+        <div class="tech-f"><label>Back</label><input type="number" id="f-vd-back" placeholder="0" min="0" max="8"></div>
+      </div>
+      <div class="tech-section">7 — Layout Calculation</div>
+      <div class="tech-calc-box" id="tech-calc-box">
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Formats / raw sheet</span><span class="tech-calc-val" id="t-formats">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Printable area</span><span class="tech-calc-val" id="t-printable">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Labels / row</span><span class="tech-calc-val" id="t-prow">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Labels / column</span><span class="tech-calc-val" id="t-pcol">--</span></div>
+        <div class="tech-calc-row bold"><span class="tech-calc-lbl">Labels / format</span><span class="tech-calc-val" id="t-pps">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Effective area</span><span class="tech-calc-val" id="t-eff">--</span></div>
+        <div class="tech-calc-row bold"><span class="tech-calc-lbl">Labels / raw sheet</span><span class="tech-calc-val" id="t-lps">--</span></div>
+        <div class="tech-calc-row bold"><span class="tech-calc-lbl">Raw sheets / 1000</span><span class="tech-calc-val" id="t-pc">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Label weight</span><span class="tech-calc-val" id="t-wt">--</span></div>
+      </div>`;
   } else {
     body.innerHTML=`
-      <div class="tech-section">Label</div>
-      <div class="tech-row"><span class="tech-lbl">Size W x L</span><span class="tech-val" id="t-plbl">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Units / row</span><span class="tech-val" id="t-pupr">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Units / column</span><span class="tech-val" id="t-pupc">--</span></div>
-      <div class="tech-section">Material</div>
-      <div class="tech-row"><span class="tech-lbl">Total meters (Qty A)</span><span class="tech-val" id="t-ptm">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Meters + waste</span><span class="tech-val" id="t-ptmw">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Material cost (Qty A)</span><span class="tech-val" id="t-pmc">--</span></div>
-      <div class="tech-section">Costs Preview (Qty A)</div>
-      <div class="tech-row"><span class="tech-lbl">Machine cost</span><span class="tech-val" id="t-pmach">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Fixed costs</span><span class="tech-val" id="t-pfix">--</span></div>
-      <div class="tech-row"><span class="tech-lbl">Tooling</span><span class="tech-val" id="t-ptool">--</span></div>`;
+      <div class="tech-section">Label Dimensions</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Width</label><input type="number" id="pf-width" placeholder="10" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+        <div class="tech-f"><label>Length</label><input type="number" id="pf-length" placeholder="70" min="1" oninput="recalcAll()"><div class="t-unit">mm</div></div>
+      </div>
+      <div class="tech-section">Roll Layout</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Units / Row</label><input type="number" id="pf-upr" placeholder="3" min="1" oninput="recalcAll()"></div>
+        <div class="tech-f"><label>Units / Col</label><input type="number" id="pf-upc" placeholder="4" min="1" oninput="recalcAll()"></div>
+      </div>
+      <div class="tech-section">Design Inks</div>
+      <div class="tech-grid tech-grid-2">
+        <div class="tech-f"><label>Front</label><input type="number" id="pf-front-inks" placeholder="1" min="0" max="8"></div>
+        <div class="tech-f"><label>Back</label><input type="number" id="pf-back-inks" placeholder="0" min="0" max="8"></div>
+      </div>
+      <div class="tech-section">Calculated</div>
+      <div class="tech-calc-box">
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Label size</span><span class="tech-calc-val" id="t-plbl">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Total meters (Qty A)</span><span class="tech-calc-val" id="t-ptm">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Meters + waste</span><span class="tech-calc-val" id="t-ptmw">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Material cost (Qty A)</span><span class="tech-calc-val" id="t-pmc">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Machine cost</span><span class="tech-calc-val" id="t-pmach">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Fixed costs</span><span class="tech-calc-val" id="t-pfix">--</span></div>
+        <div class="tech-calc-row"><span class="tech-calc-lbl">Tooling</span><span class="tech-calc-val" id="t-ptool">--</span></div>
+      </div>`;
   }
 }
 
@@ -1297,60 +1467,118 @@ function recalcAll(){
 }
 
 // ══════════════════════════════════════════════════════════
-// HT CALCULATIONS
+// HT CALCULATIONS (redesigned — spec §4.7 layout calc)
 // ══════════════════════════════════════════════════════════
 function recalcHT(){
   const w=pf('f-width'),l=pf('f-length'),fi=pi('f-front-inks'),bi=pi('f-back-inks'),gsm=pf('f-gsm')||325;
-  const rawW=pf('f-raw-w'),rawL=pf('f-raw-l'),printW=pf('f-sheet-w'),printL=pf('f-sheet-l');
-  const gr=pf('f-gap-r')||5,gc=pf('f-gap-c')||5;
-  const ready=w&&l&&rawW&&rawL&&printW&&printL;
+  const rawW=pf('f-raw-w'),rawL=pf('f-raw-l');
+  const printW=pf('f-print-w'),printL=pf('f-print-l');
+  const gripper=pf('f-gripper')||0, counterGrip=pf('f-counter-grip')||0;
+  const marginL=pf('f-margin-l')||0, marginR=pf('f-margin-r')||0;
+  const hGap=pf('f-h-gap')||0, vGap=pf('f-v-gap')||0;
   const st=document.getElementById('tech-status');
+  const ready=w&&l&&rawW&&rawL&&printW&&printL;
   if(!ready){
     st.textContent='Fill all sizes'; tech={};
-    ['f-sheet-parts','f-lpf','f-labels-per-raw','f-raw-per-1000','f-weight'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    ['t-formats','t-printable','t-prow','t-pcol','t-pps','t-eff','t-lps','t-pc','t-wt'].forEach(id=>set(id,'--'));
     return;
   }
   st.textContent='Auto-calculated';
-  const partsW=Math.floor(rawW/printW),partsL=Math.floor(rawL/printL),partsPerRaw=partsW*partsL;
-  const pRow=Math.floor(printW/(w+gc)),pCol=Math.floor(printL/(l+gr));
-  const labelsPerFormat=pRow*pCol,labelsPerRaw=labelsPerFormat*partsPerRaw;
-  const psw=pRow*(w+gc)-gc,psl=pCol*(l+gr)-gr;
+
+  // Step 1: How many print formats fit in one raw sheet
+  const formatsW=Math.floor(rawW/printW), formatsL=Math.floor(rawL/printL);
+  const formatsPerRaw=formatsW*formatsL;
+
+  // Step 2: Printable area on the print sheet (minus margins/gripper)
+  const printableW=printW-marginL-marginR;
+  const printableH=printL-gripper-counterGrip;
+
+  // Step 3: Labels per print format
+  const labelsPerRow=(w+hGap)>0?Math.floor((printableW+hGap)/(w+hGap)):0;
+  const labelsPerCol=(l+vGap)>0?Math.floor((printableH+vGap)/(l+vGap)):0;
+  const labelsPerFormat=labelsPerRow*labelsPerCol;
+
+  // Step 4: Labels per raw sheet
+  const labelsPerSheet=labelsPerFormat*formatsPerRaw;
+
+  const effW=labelsPerRow>0?(labelsPerRow*w)+((labelsPerRow-1)*hGap):0;
+  const effH=labelsPerCol>0?(labelsPerCol*l)+((labelsPerCol-1)*vGap):0;
+  const rawPerK=labelsPerSheet>0?Math.ceil(1000/labelsPerSheet):0;
   const areaM2=(w/1000)*(l/1000),weight=+(areaM2*gsm).toFixed(4);
-  const rawPer1000=labelsPerRaw>0?Math.ceil(1000/labelsPerRaw):0;
-  tech={w,l,fi,bi,gsm,rawW,rawL,printW,printL,gr,gc,partsW,partsL,partsPerRaw,pRow,pCol,labelsPerFormat,labelsPerRaw,psw,psl,weight,rawPer1000};
-  // Update calc fields
-  sv('f-sheet-parts',partsPerRaw);sv('f-lpf',labelsPerFormat);sv('f-labels-per-raw',labelsPerRaw);sv('f-raw-per-1000',rawPer1000||'');sv('f-weight',weight?weight+' g':'');
-  // Update tech panel
-  set('t-prow',pRow);set('t-pcol',pCol);set('t-pps',labelsPerFormat);
-  set('t-psms',partsPerRaw+' ('+partsW+'x'+partsL+')');
-  set('t-gaps',gr+' / '+gc+' mm');
-  set('t-htw',w+'x'+l+' mm');set('t-htl',rawW+'x'+rawL+' mm');
-  set('t-psw',printW+'x'+printL+' mm');set('t-psl',psw+'x'+psl+' mm');
-  set('t-gsm',gsm);set('t-inks',(fi||0)+' / '+(bi||0));set('t-wt',weight+' g');
-  const matCost=pf('f-mat-cost');
-  if(labelsPerRaw>0){set('t-sn',labelsPerRaw);set('t-pc',rawPer1000+(matCost?' -> EUR'+(rawPer1000*matCost).toFixed(4):''));}
-  else{set('t-sn','--');set('t-pc','--');}
+
+  tech={w,l,fi,bi,gsm,rawW,rawL,printW,printL,gripper,counterGrip,marginL,marginR,hGap,vGap,
+        formatsW,formatsL,formatsPerRaw,printableW,printableH,
+        labelsPerRow,labelsPerCol,labelsPerFormat,labelsPerSheet,effW,effH,weight,rawPerK};
+
+  // Update tech calc box
+  set('t-formats',formatsPerRaw+' ('+formatsW+'×'+formatsL+')');
+  set('t-printable',printableW+'×'+printableH+' mm');
+  set('t-prow',labelsPerRow);
+  set('t-pcol',labelsPerCol);
+  set('t-pps',labelsPerFormat);
+  set('t-eff',effW+'×'+effH+' mm');
+  set('t-lps',labelsPerSheet);
+  set('t-pc',rawPerK||'--');
+  set('t-wt',weight?weight+' g':'--');
+
   recalcHTCosts();
+}
+
+function getHTMaterialCostPerLabel(){
+  // Multi-material: compute total cost per label based on selected materials
+  const lps=tech.labelsPerSheet||0;
+  return selectedMaterials.reduce((sum,m)=>{
+    const price=m.quotationPrice||0;
+    switch(m.unit){
+      case 'SHEET': return sum+(lps>0?price/lps:0);
+      case 'PCS': return sum+price;
+      case 'M': {
+        const labelLenM=((tech.l||0)/1000);
+        return sum+(price*labelLenM);
+      }
+      default: return sum+(lps>0?price/lps:0);
+    }
+  },0);
 }
 
 function recalcHTCosts(){
   const qtys=['f-qa','f-qb','f-qc','f-qd'].map(id=>pi(id));
-  const matCost=pf('f-mat-cost'),matPct=pf('f-mat-pct')/100||1;
   const extraPct=pf('f-extra-pct')/100||0.03,gpPct=pf('f-gp')/100||0.4;
   const fi=pi('f-front-inks'),bi=pi('f-back-inks');
   const platesUnit=pf('f-plates')||9;
   const pcRate=pf('f-prod-ctrl')||0.553,giRate=pf('f-goods-in')||0.244,goRate=pf('f-goods-out')||0.256;
   const pcMin=pf('f-pch')||5,giMin=pf('f-gih')||5,goMin=pf('f-goh')||5;
-  const pps=tech.labelsPerRaw||0;
+  const lps=tech.labelsPerSheet||0;
+  const matCostPerLabel=getHTMaterialCostPerLabel();
   const checkedMachines=getCheckedMachines('ht');
   const results=qtys.map(qty=>{
-    if(!qty||!pps)return null;
-    const sheetsNeeded=Math.ceil(qty/pps);
-    const paperCost=sheetsNeeded*matCost*matPct;
+    if(!qty||!lps)return null;
+    const paperCost=qty*matCostPerLabel;
+    const sheetsNeeded=Math.ceil(qty/lps);
+    // printFormats = sheets going through the press
+    const printFormats=tech.labelsPerFormat>0?Math.ceil(qty/tech.labelsPerFormat):sheetsNeeded;
     let machineCost=0;
     checkedMachines.forEach(m=>{
-      const inkMult=m.name.includes('OFFSET')?(fi>0?fi*1.15-0.15:1):1;
-      machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+      const kClick=m.konicaClick||0;
+      const oClick=m.okiClick||0;
+      const mWaste=(m.wastePercent||0)/100;
+      const sSetup=m.sheetsSetup||0;
+
+      if(m.name.includes('OFFSET')){
+        // OFFSET: ink multiplier formula
+        const inkMult=fi>0?fi*1.15-0.15:1;
+        machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+      } else {
+        // General + digital: format-based
+        const baseCost=((printFormats+sSetup)*m.oneHit)+(printFormats*kClick)+(printFormats*oClick)+m.setup;
+        const withWaste=baseCost*(1+mWaste);
+        machineCost+=withWaste*Math.max(fi,1);
+        // Back inks
+        if(bi>0){
+          const backBase=((printFormats+sSetup)*m.oneHit)+m.setup;
+          machineCost+=backBase*(1+mWaste)*bi;
+        }
+      }
     });
     const platesTotal=platesUnit*bi;
     const overhead=(pcRate*pcMin)+(giRate*giMin)+(goRate*goMin);
@@ -1364,6 +1592,7 @@ function recalcHTCosts(){
     return{qty,paperCost,machineCost,outsourcing,subtotal,extraCost,totalCost,costPerUnit,costPer1000,sellPrice,gpActual};
   });
   renderHTCostGrid(results);
+  updateMaterialTotalDisplay();
 }
 
 function renderHTCostGrid(results){
@@ -1401,13 +1630,25 @@ function recalcPFL(){
   st.textContent='Auto-calculated';
   const labelLenM=l/1000;
   tech={w,l,upr,upc,labelLenM,type:'PFL'};
-  set('t-plbl',w+'x'+l+' mm');set('t-pupr',upr);set('t-pupc',upc);
+  set('t-plbl',w+'x'+l+' mm');
   recalcPFLCosts();
+}
+
+function getPFLMaterialCostPerUnit(){
+  // Multi-material: total cost per label for PFL
+  return selectedMaterials.reduce((sum,m)=>{
+    const price=m.quotationPrice||0;
+    switch(m.unit){
+      case 'M': return sum+(price*((tech.l||0)/1000));
+      case 'PCS': return sum+price;
+      default: return sum+price;
+    }
+  },0);
 }
 
 function recalcPFLCosts(){
   const qtys=['f-qa','f-qb','f-qc','f-qd'].map(id=>pi(id));
-  const matCost=pf('pf-mat-cost')||0;
+  const matCostPerUnit=getPFLMaterialCostPerUnit();
   const matWaste=pf('pf-mat-waste')/100||0.01;
   const extraPct=pf('pf-extra-pct')/100||0.03;
   const gpPct=pf('f-gp')/100||0.4;
@@ -1418,23 +1659,19 @@ function recalcPFLCosts(){
   const screenQty=pi('pf-screen-qty'),screenCost=pf('pf-screen-cost')||25;
   const labelLenM=tech.labelLenM||0;
   const checkedMachines=getCheckedMachines('pfl');
-  // Tooling calc
   const wCm=(tech.w||0)/10,lCm=(tech.l||0)/10;
-  const plateCm2=wCm*(lCm*2)*1.1; // development = length*2, +10% waste
+  const plateCm2=wCm*(lCm*2)*1.1;
   const plateCostEach=plateCm2*flexoCm2;
   const toolingFlexo=plateCostEach*flexoQty;
   const toolingScreen=screenQty*screenCost;
   const toolingTotal=toolingFlexo+toolingScreen;
-  // Fixed costs
   const fixedCosts=(giRate*giMin/60)+(goRate*goMin/60)+(pcRate*pcMin/60);
 
   const results=qtys.map(qty=>{
     if(!qty||!labelLenM)return null;
     const totalMeters=qty*labelLenM;
     const totalMetersWaste=totalMeters*(1+matWaste);
-    // Material
-    const materialCost=qty*(1+matWaste)*matCost;
-    // Machines
+    const materialCost=qty*(1+matWaste)*matCostPerUnit;
     let machineCost=0;
     checkedMachines.forEach(m=>{
       const fm=m.frontMult||1;
@@ -1449,7 +1686,6 @@ function recalcPFLCosts(){
     const gpActual=((sellPrice-costPerUnit)/sellPrice)*100;
     return{qty,materialCost,machineCost,fixedCosts,toolingTotal,subtotal,extraCost,totalCost,costPerUnit,costPer1000,sellPrice,gpActual,totalMeters,totalMetersWaste};
   });
-  // Update tech panel with Qty A data
   const r0=results[0];
   if(r0){
     set('t-ptm',Math.round(r0.totalMeters).toLocaleString()+' m');
@@ -1460,6 +1696,7 @@ function recalcPFLCosts(){
     set('t-ptool','EUR '+toolingTotal.toFixed(2));
   }
   renderPFLCostGrid(results);
+  updateMaterialTotalDisplay();
 }
 
 function renderPFLCostGrid(results){
@@ -1497,13 +1734,15 @@ function validateStep2(){
   const qa=document.getElementById('f-qa').value;
   if(!cust||!code||!qa){showErr('err-2');return false;}
   if(S.type==='HT'){
-    const w=document.getElementById('f-width').value,l=document.getElementById('f-length').value;
-    const fi=document.getElementById('f-front-inks').value,mat=document.getElementById('f-mat-cost').value;
-    if(!w||!l||fi===''||!mat){showErr('err-2');return false;}
+    const w=pf('f-width'),l=pf('f-length');
+    const rawW=pf('f-raw-w'),rawL=pf('f-raw-l');
+    const printW=pf('f-print-w'),printL=pf('f-print-l');
+    if(!w||!l||!rawW||!rawL||!printW||!printL){showErr('err-2');return false;}
+    if(!selectedMaterials.length){showErr('err-2');return false;}
   } else {
-    const w=document.getElementById('pf-width').value,l=document.getElementById('pf-length').value;
-    const mat=document.getElementById('pf-mat-cost').value;
-    if(!w||!l||!mat){showErr('err-2');return false;}
+    const w=pf('pf-width'),l=pf('pf-length');
+    if(!w||!l){showErr('err-2');return false;}
+    if(!selectedMaterials.length){showErr('err-2');return false;}
   }
   return true;
 }
@@ -1523,16 +1762,21 @@ function buildSummary(){
   html+=sec('Product Information');
   html+=pr('Customer',customer)+pr('Product Code',code)+pr('Call Out',callout);
   html+=pr('Product Line',S.line)+pr('Quotation Type',S.type==='HT'?'Hang Tag (Sheet)':'Printed Fabric Label (Roll)');
-  if(S.type==='HT'){
-    html+=sec('Raw Material');
-    html+=pr('Reference',gv('f-mat-ref')||'--');
-    html+=pr('Cost / sheet','EUR '+parseFloat(gv('f-mat-cost')||0).toFixed(4));
-    html+=pr('GSM',gv('f-gsm')+' gsm');
+  // Materials
+  html+=sec('Raw Materials');
+  if(selectedMaterials.length){
+    selectedMaterials.forEach(m=>{
+      const overFlag=m.isOverridden?' (overridden)':'';
+      html+=pr(m.itemNumber||'--','EUR '+m.quotationPrice.toFixed(4)+' / '+m.unit+overFlag);
+    });
+    if(S.type==='HT'){
+      html+=pr('Total cost / label','EUR '+getHTMaterialCostPerLabel().toFixed(6));
+    } else {
+      html+=pr('Total cost / unit','EUR '+getPFLMaterialCostPerUnit().toFixed(6));
+      html+=pr('Material waste',gv('pf-mat-waste')+'%');
+    }
   } else {
-    html+=sec('Material');
-    html+=pr('Reference',gv('pf-mat-ref')||'--');
-    html+=pr('Cost / unit','EUR '+parseFloat(gv('pf-mat-cost')||0).toFixed(4));
-    html+=pr('Waste',gv('pf-mat-waste')+'%');
+    html+=pr('Materials','None selected');
   }
   html+='</div><div>';
   // Image + Technical
@@ -1542,21 +1786,27 @@ function buildSummary(){
   }
   html+=sec('Technical');
   if(S.type==='HT'&&tech.w){
-    html+=pr('Label size',tech.w+'x'+tech.l+' mm');
-    html+=pr('Raw sheet',tech.rawW+'x'+tech.rawL+' mm');
-    html+=pr('Print format',tech.printW+'x'+tech.printL+' mm');
-    html+=pr('Formats / raw',tech.partsPerRaw+' ('+tech.partsW+'x'+tech.partsL+')');
+    html+=pr('Label size',tech.w+'×'+tech.l+' mm');
+    html+=pr('Raw sheet',tech.rawW+'×'+tech.rawL+' mm');
+    html+=pr('Print sheet',tech.printW+'×'+tech.printL+' mm');
+    html+=pr('Paper GSM',tech.gsm+' gsm');
+    html+=pr('Formats / raw sheet',tech.formatsPerRaw+' ('+tech.formatsW+'×'+tech.formatsL+')');
+    html+=pr('Printable area',tech.printableW+'×'+tech.printableH+' mm');
+    html+=pr('Labels / row',tech.labelsPerRow);
+    html+=pr('Labels / column',tech.labelsPerCol);
     html+=pr('Labels / format',tech.labelsPerFormat);
-    html+=pr('Labels / raw sheet',tech.labelsPerRaw);
-    html+=pr('Effective area',tech.psw+'x'+tech.psl+' mm');
+    html+=pr('Labels / raw sheet',tech.labelsPerSheet);
+    html+=pr('Effective area',tech.effW+'×'+tech.effH+' mm');
+    html+=pr('Raw sheets / 1000',tech.rawPerK);
     html+=pr('Label weight',tech.weight+' g');
-    html+=pr('Front / Back inks',(tech.fi||0)+' / '+(tech.bi||0));
+    html+=pr('Design inks (F/B)',(tech.fi||0)+' / '+(tech.bi||0));
+    html+=pr('Variable data (F/B)',(pi('f-vd-front')||0)+' / '+(pi('f-vd-back')||0));
   } else if(S.type==='PFL'&&tech.w){
-    html+=pr('Label size',tech.w+'x'+tech.l+' mm');
+    html+=pr('Label size',tech.w+'×'+tech.l+' mm');
     html+=pr('Units / row',tech.upr);
     html+=pr('Units / column',tech.upc);
-    html+=pr('Front inks',gv('pf-front-inks')||'0');
-    html+=pr('Back inks',gv('pf-back-inks')||'0');
+    html+=pr('Front inks',pi('pf-front-inks')||0);
+    html+=pr('Back inks',pi('pf-back-inks')||0);
   }
   html+='</div></div>';
   // Machines table
@@ -1618,19 +1868,35 @@ function buildPricingSummaryHTML(){
 }
 
 function calcHTForQty(qty){
-  const matCost=pf('f-mat-cost'),matPct=pf('f-mat-pct')/100||1;
   const extraPct=pf('f-extra-pct')/100||0.03;
   const fi=pi('f-front-inks'),bi=pi('f-back-inks');
   const platesUnit=pf('f-plates')||9;
   const pcRate=pf('f-prod-ctrl')||0.553,giRate=pf('f-goods-in')||0.244,goRate=pf('f-goods-out')||0.256;
   const pcMin=pf('f-pch')||5,giMin=pf('f-gih')||5,goMin=pf('f-goh')||5;
-  const pps=tech.labelsPerRaw||1;
-  const sheetsNeeded=Math.ceil(qty/pps);
-  const paperCost=sheetsNeeded*matCost*matPct;
+  const lps=tech.labelsPerSheet||1;
+  const matCostPerLabel=getHTMaterialCostPerLabel();
+  const paperCost=qty*matCostPerLabel;
+  const sheetsNeeded=Math.ceil(qty/lps);
+  const printFormats=tech.labelsPerFormat>0?Math.ceil(qty/tech.labelsPerFormat):sheetsNeeded;
   let machineCost=0;
   getCheckedMachines('ht').forEach(m=>{
-    const inkMult=m.name.includes('OFFSET')?(fi>0?fi*1.15-0.15:1):1;
-    machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+    const kClick=m.konicaClick||0;
+    const oClick=m.okiClick||0;
+    const mWaste=(m.wastePercent||0)/100;
+    const sSetup=m.sheetsSetup||0;
+
+    if(m.name.includes('OFFSET')){
+      const inkMult=fi>0?fi*1.15-0.15:1;
+      machineCost+=m.setup*inkMult+m.oneHit*qty*inkMult;
+    } else {
+      const baseCost=((printFormats+sSetup)*m.oneHit)+(printFormats*kClick)+(printFormats*oClick)+m.setup;
+      const withWaste=baseCost*(1+mWaste);
+      machineCost+=withWaste*Math.max(fi,1);
+      if(bi>0){
+        const backBase=((printFormats+sSetup)*m.oneHit)+m.setup;
+        machineCost+=backBase*(1+mWaste)*bi;
+      }
+    }
   });
   const outsourcing=platesUnit*bi+(pcRate*pcMin)+(giRate*giMin)+(goRate*goMin);
   const subtotal=paperCost+machineCost+outsourcing;
@@ -1639,7 +1905,8 @@ function calcHTForQty(qty){
 }
 
 function calcPFLForQty(qty){
-  const matCost=pf('pf-mat-cost')||0,matWaste=pf('pf-mat-waste')/100||0.01;
+  const matCostPerUnit=getPFLMaterialCostPerUnit();
+  const matWaste=pf('pf-mat-waste')/100||0.01;
   const extraPct=pf('pf-extra-pct')/100||0.03;
   const giRate=pf('pf-gi-rate')||0,giMin=pf('pf-gi-min')||0;
   const goRate=pf('pf-go-rate')||0,goMin=pf('pf-go-min')||0;
@@ -1652,7 +1919,7 @@ function calcPFLForQty(qty){
   const toolingTotal=plateCm2*flexoCm2*flexoQty+screenQty*screenCost;
   const fixedCosts=(giRate*giMin/60)+(goRate*goMin/60)+(pcRate*pcMin/60);
   const totalMetersWaste=qty*labelLenM*(1+matWaste);
-  const materialCost=qty*(1+matWaste)*matCost;
+  const materialCost=qty*(1+matWaste)*matCostPerUnit;
   let machineCost=0;
   getCheckedMachines('pfl').forEach(m=>{
     const fm=m.frontMult||1,mw=m.wastePct/100||0;
@@ -1847,9 +2114,12 @@ function renderMachineCards(type){
     const card=document.createElement('div');card.className='mach-cfg-card';
     const setupField=type==='ht'?'sheetsSetup':'metersSetup';
     const setupLabel=type==='ht'?'Sheets Setup':'Meters Setup';
+    const techVal=m.technology||'common';
+    const techOpts=type==='ht'?`<option value="common"${techVal==='common'?' selected':''}>Common</option><option value="offset"${techVal==='offset'?' selected':''}>Offset</option><option value="digital"${techVal==='digital'?' selected':''}>Digital</option><option value="inkjet"${techVal==='inkjet'?' selected':''}>Inkjet</option>`:'';
     card.innerHTML=`
       <div class="mach-cfg-card-head" onclick="this.parentElement.classList.toggle('open');event.stopPropagation()">
         <input value="${m.name}" placeholder="Name" onchange="${type}MachinesConfig[${i}].name=this.value" onclick="event.stopPropagation()">
+        ${type==='ht'?`<select style="background:#333;color:#ccc;border:1px solid #555;border-radius:2px;font-size:.65rem;padding:2px 6px;cursor:pointer" onclick="event.stopPropagation()" onchange="${type}MachinesConfig[${i}].technology=this.value">${techOpts}</select>`:''}
         <span class="mch-toggle">&#9660;</span>
         <button class="del-mach-btn" onclick="event.stopPropagation();${type}MachinesConfig.splice(${i},1);renderMachineCards('${type}')">x</button>
       </div>
@@ -1874,6 +2144,13 @@ function renderMachineCards(type){
           <div class="mf"><label>Maint. Annual</label><input class="cfg-input" type="number" value="${m.maintAnnual}" onchange="${type}MachinesConfig[${i}].maintAnnual=+this.value;refreshCfgCard('${type}',${i})"></div>
           <div class="mf"><label>Total/Hour</label><div class="cfg-calc" id="${type}th-${i}">EUR ${c.totalHr.toFixed(4)}</div></div>
         </div>
+        ${type==='ht'?`
+        <div class="mach-cfg-section">Digital Click Costs</div>
+        <div class="mach-cfg-row col3">
+          <div class="mf"><label>Konica (EUR/sheet)</label><input class="cfg-input" type="number" value="${m.konicaClickCost||0}" step="0.001" onchange="${type}MachinesConfig[${i}].konicaClickCost=+this.value"></div>
+          <div class="mf"><label>OKI (EUR/sheet)</label><input class="cfg-input" type="number" value="${m.okiClickCost||0}" step="0.001" onchange="${type}MachinesConfig[${i}].okiClickCost=+this.value"></div>
+          <div class="mf"><label>Waste %</label><input class="cfg-input" type="number" value="${m.wastePercent||0}" step="0.1" onchange="${type}MachinesConfig[${i}].wastePercent=+this.value"></div>
+        </div>`:''}
         <div class="mach-cfg-section">Results</div>
         <div class="mach-cfg-row col3">
           <div class="mf"><label>EUR Setup</label><div class="cfg-calc" id="${type}sc-${i}" style="font-size:.9rem;font-weight:700">EUR ${c.setupCost.toFixed(4)}</div></div>
@@ -1899,7 +2176,7 @@ function refreshCfgCard(type,i){
 function addMachineCard(type){
   const config=type==='ht'?htMachinesConfig:pflMachinesConfig;
   const base=type==='ht'
-    ?{name:'New Machine',nomSpeed:1000,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0}
+    ?{name:'New Machine',nomSpeed:1000,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0,technology:'common',konicaClickCost:0,okiClickCost:0,wastePercent:0}
     :{name:'New Machine',nomSpeed:500,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,metersSetup:0,empCost:21784,socialPct:23.75,extraTime:8.87};
   config.push(base);renderMachineCards(type);
 }
@@ -1912,9 +2189,10 @@ async function saveMachines(type){
     const setupField=type==='ht'?'sheetsSetup':'metersSetup';
     if(machines[i]){
       machines[i].name=m.name;machines[i].setup=c.setupCost;machines[i].oneHit=c.oneHit;
-      machines[i][setupField]=m[setupField];
+      machines[i][setupField]=m[setupField];machines[i].technology=m.technology||'common';
+      machines[i].konicaClickCost=m.konicaClickCost||0;machines[i].okiClickCost=m.okiClickCost||0;machines[i].wastePercent=m.wastePercent||0;
     } else {
-      const entry={name:m.name,setup:c.setupCost,oneHit:c.oneHit};
+      const entry={name:m.name,setup:c.setupCost,oneHit:c.oneHit,technology:m.technology||'common',konicaClickCost:m.konicaClickCost||0,okiClickCost:m.okiClickCost||0,wastePercent:m.wastePercent||0};
       entry[setupField]=m[setupField];machines.push(entry);
     }
   });
@@ -2116,12 +2394,53 @@ function pr(l,v){return'<div class="print-info-row"><span class="print-info-lbl"
 function flashSave(id){const e=document.getElementById(id);if(!e)return;e.style.display='inline';setTimeout(()=>e.style.display='none',2500);}
 
 // ══════════════════════════════════════════════════════════
-// RAW MATERIALS
+// RAW MATERIALS — Enhanced Import with Auto-Detection
 // ══════════════════════════════════════════════════════════
 let countryMaterials = []; // loaded from Firestore for current settings country
 let settingsCountryMat = '';
 const MAT_PAGE_SIZE = 50;
 let matPage = 0;
+
+// Column auto-detection patterns (spec §4.2)
+const COLUMN_PATTERNS = {
+  itemNumber:  ['item number', 'item_number', 'item no', 'code', 'ref', 'sku', 'part number'],
+  itemName:    ['item name', 'item_name', 'description', 'name', 'desc', 'product name'],
+  unit:        ['unit', 'uom', 'unit of measure', 'units'],
+  priceUnit:   ['price(unit)', 'price_unit', 'unit price', 'price/unit', 'price per unit', 'cost/unit'],
+  priceKpcs:   ['price(kpcs)', 'price_kpcs', 'price/1000', 'price per 1000', 'cost/kpcs'],
+  itemType:    ['item type', 'item_type', 'type', 'material type'],
+  productLine: ['sl/rfid?', 'sl/rfid', 'product line', 'line', 'sl_rfid'],
+  prodType:    ['prod_type', 'product type', 'category', 'material category', 'prod type']
+};
+
+const REQUIRED_FIELDS = ['itemNumber', 'itemName', 'unit', 'priceUnit', 'itemType', 'productLine', 'prodType'];
+
+// ProdType normalization map (spec §9)
+const PROD_TYPE_MAP = {
+  'paper': 'PAPER', 'papel': 'PAPER', 'papier': 'PAPER',
+  'ribbon': 'Ribbon', 'cinta': 'Ribbon', 'ribon': 'Ribbon',
+  'rfid': 'RFID',
+  'woven label': 'Woven Label', 'woven': 'Woven Label', 'etiqueta tejida': 'Woven Label',
+  'ink': 'Ink', 'tinta': 'Ink',
+  'heat transfer': 'Heat Transfer', 'ht': 'Heat Transfer', 'transferencia': 'Heat Transfer',
+  'paper printing': 'Paper Printing', 'impresión papel': 'Paper Printing', 'impresion papel': 'Paper Printing',
+  'seal': 'Seal', 'precinto': 'Seal', 'sello': 'Seal',
+  'sticker': 'Sticker', 'pegatina': 'Sticker', 'adhesivo': 'Sticker',
+  'printed label': 'Printed Label', 'etiqueta impresa': 'Printed Label'
+};
+
+function normalizeProdType(val) {
+  if (!val) return '';
+  const lower = String(val).trim().toLowerCase();
+  if (PROD_TYPE_MAP[lower]) return PROD_TYPE_MAP[lower];
+  // Check if it's already a canonical value
+  const canonicals = Object.values(PROD_TYPE_MAP);
+  const found = canonicals.find(c => c.toLowerCase() === lower);
+  return found || String(val).trim();
+}
+
+// Import flow state
+let importState = { step: 0, file: null, fileName: '', headers: [], rows: [], mapping: {}, validRows: [], invalidRows: [] };
 
 function switchMaterialCountry(country) {
   settingsCountryMat = country;
@@ -2130,25 +2449,71 @@ function switchMaterialCountry(country) {
 }
 
 async function loadMaterialsForSettings() {
-  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) { countryMaterials = []; renderMaterialsTable(); return; }
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) { countryMaterials = []; renderMaterialsTable(); updateImportInfo(); return; }
   const countryId = COUNTRY_DATA[settingsCountryMat].id;
-  if (!countryId) { countryMaterials = []; renderMaterialsTable(); return; }
+  if (!countryId) { countryMaterials = []; renderMaterialsTable(); updateImportInfo(); return; }
   showLoadingOverlay('Loading materials...');
   try {
     countryMaterials = await loadMaterialsForCountry(countryId);
   } catch(e) { console.error(e); countryMaterials = []; }
   hideLoadingOverlay();
   renderMaterialsTable();
+  updateImportInfo();
+  loadImportHistory();
+}
+
+function updateImportInfo() {
+  const el = document.getElementById('mat-import-info');
+  if (!el) return;
+  if (countryMaterials.length === 0) {
+    el.innerHTML = 'No materials loaded. Upload an Excel file to populate the catalog.';
+  } else {
+    const latest = countryMaterials[0];
+    const ts = latest?.lastUpdated?.toDate ? latest.lastUpdated.toDate().toLocaleDateString('en-GB') : '';
+    const by = latest?.uploadedByName || latest?.uploadedBy || '';
+    el.innerHTML = `Total materials: <strong>${countryMaterials.length}</strong>${ts ? ' &middot; Last import: ' + ts : ''}${by ? ' by ' + by : ''}`;
+  }
+}
+
+async function loadImportHistory() {
+  const el = document.getElementById('mat-import-history');
+  if (!el) return;
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) { el.innerHTML = ''; return; }
+  const countryId = COUNTRY_DATA[settingsCountryMat].id;
+  if (!countryId) { el.innerHTML = ''; return; }
+  try {
+    const imports = await loadMaterialImports(countryId);
+    if (!imports.length) { el.innerHTML = '<div style="color:#aaa;font-size:.72rem;padding:8px">No import history yet.</div>'; return; }
+    let html = '<table class="import-history-table"><thead><tr><th>Date</th><th>By</th><th>File</th><th style="text-align:right">Records</th><th>Replaced</th></tr></thead><tbody>';
+    imports.forEach(imp => {
+      const d = imp.importedAt?.toDate ? imp.importedAt.toDate().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '--';
+      html += `<tr>
+        <td style="font-family:'Space Mono',monospace">${d}</td>
+        <td>${imp.importedByName || imp.importedBy || '--'}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${imp.fileName || ''}">${imp.fileName || '--'}</td>
+        <td style="text-align:right;font-family:'Space Mono',monospace;font-weight:600">${imp.totalRecords || 0}</td>
+        <td>${imp.replacedPrevious ? 'Yes' : 'No'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    el.innerHTML = html;
+  } catch(e) { console.error(e); el.innerHTML = ''; }
 }
 
 function getFilteredMaterials() {
   const typeF = document.getElementById('mat-type-filter')?.value || '';
   const itemF = document.getElementById('mat-item-filter')?.value || '';
+  const lineF = document.getElementById('mat-line-filter')?.value || '';
   const search = (document.getElementById('mat-search-input')?.value || '').toLowerCase().trim();
   return countryMaterials.filter(m => {
     if (typeF && m.prodType !== typeF) return false;
     if (itemF && m.itemType !== itemF) return false;
-    if (search && !m.reference.toLowerCase().includes(search) && !(m.name || '').toLowerCase().includes(search)) return false;
+    if (lineF && m.productLine !== lineF) return false;
+    if (search) {
+      const num = (m.itemNumber || m.reference || '').toLowerCase();
+      const nm = (m.itemName || m.name || '').toLowerCase();
+      if (!num.includes(search) && !nm.includes(search)) return false;
+    }
     return true;
   });
 }
@@ -2171,34 +2536,34 @@ function renderMaterialsTable() {
   }
 
   let html = `<table class="mat-table"><thead><tr>
-    <th>Type</th><th>Item</th><th>Reference</th><th>Name</th>
+    <th>Type</th><th>Reference</th><th>Name</th>
     <th>Unit</th><th class="r">Price/Unit</th><th class="r">Price/Kpcs</th>
-    <th>Prod Type</th><th>Category</th><th class="r">Stock</th>
+    <th>Prod Type</th><th>Line</th>
     <th style="width:36px"></th>
   </tr></thead><tbody>`;
 
-  page.forEach((m, i) => {
+  page.forEach(m => {
     const cls = m.itemType === 'RM' ? 'rm-row' : 'fg-row';
     const tag = m.itemType === 'RM' ? '<span class="mat-tag rm">RM</span>' : '<span class="mat-tag fg">FG</span>';
     const matId = m.id || '';
+    const ref = m.itemNumber || m.reference || '--';
+    const name = m.itemName || m.name || '--';
+    const line = m.productLine || m.category || '--';
     html += `<tr class="${cls}">
       <td>${tag}</td>
-      <td class="mono" style="font-size:.65rem">${m.itemType || '--'}</td>
-      <td class="mono" style="font-weight:600" title="${m.reference}">${m.reference || '--'}</td>
-      <td title="${m.name || ''}">${m.name || '--'}</td>
+      <td class="mono" style="font-weight:600" title="${ref}">${ref}</td>
+      <td title="${name}">${name}</td>
       <td class="mono">${m.unit || '--'}</td>
       <td class="mono r">${m.priceUnit != null ? m.priceUnit.toFixed(4) : '--'}</td>
       <td class="mono r">${m.priceKpcs != null ? m.priceKpcs.toFixed(2) : '--'}</td>
       <td style="font-size:.65rem">${m.prodType || '--'}</td>
-      <td style="font-size:.65rem">${m.category || '--'}</td>
-      <td class="mono r">${m.stock != null ? m.stock.toLocaleString() : '--'}</td>
-      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1rem;font-weight:700;cursor:pointer;padding:2px 6px" onclick="deleteMaterialById('${matId}','${(m.reference||'').replace(/'/g,'')}')">✕</button></td>
+      <td style="font-size:.65rem">${line}</td>
+      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1rem;font-weight:700;cursor:pointer;padding:2px 6px" onclick="deleteMaterialById('${matId}','${ref.replace(/'/g,'')}')">&#10005;</button></td>
     </tr>`;
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
 
-  // Pagination
   if (totalPages > 1) {
     pagDiv.innerHTML = `
       <button onclick="matPage=0;renderMaterialsTable()" ${matPage === 0 ? 'disabled' : ''}>First</button>
@@ -2206,20 +2571,16 @@ function renderMaterialsTable() {
       <span>Page ${matPage + 1} of ${totalPages}</span>
       <button onclick="matPage++;renderMaterialsTable()" ${matPage >= totalPages - 1 ? 'disabled' : ''}>Next</button>
       <button onclick="matPage=${totalPages - 1};renderMaterialsTable()" ${matPage >= totalPages - 1 ? 'disabled' : ''}>Last</button>`;
-  } else {
-    pagDiv.innerHTML = '';
-  }
+  } else { pagDiv.innerHTML = ''; }
 }
 
+// ── IMPORT FLOW (3-step modal) ──────────────────────────
 async function handleMaterialsUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  event.target.value = ''; // reset so same file can be re-uploaded
+  event.target.value = '';
 
-  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) {
-    alert('Select a country first.');
-    return;
-  }
+  if (!settingsCountryMat || !COUNTRY_DATA[settingsCountryMat]) { alert('Select a country first.'); return; }
   const countryId = COUNTRY_DATA[settingsCountryMat].id;
   if (!countryId) { alert('Country has no ID. Save hours first.'); return; }
 
@@ -2229,55 +2590,298 @@ async function handleMaterialsUpload(event) {
     const wb = XLSX.read(data, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const json = XLSX.utils.sheet_to_json(ws, { defval: null });
-
     if (!json.length) { alert('No data found in Excel.'); hideLoadingOverlay(); return; }
 
-    // Map Excel columns to our schema
-    const rows = json.filter(r => r['Item number']).map(r => ({
-      reference: String(r['Item number'] || '').trim(),
-      name: String(r['Item name'] || '').trim(),
-      stock: r['Stock (Qty)'] != null ? +r['Stock (Qty)'] : null,
-      unit: String(r['Unit'] || '').trim(),
-      priceUnit: r['Price(Unit)'] != null ? +r['Price(Unit)'] : null,
-      priceKpcs: r['Price(Kpcs)'] != null ? +r['Price(Kpcs)'] : null,
-      totalEur: r['Total EUR'] != null ? +r['Total EUR'] : null,
-      itemType: String(r['Item type'] || '').trim(),
-      category: String(r['SL/RFID?'] || '').trim(),
-      prodType: String(r['Prod_Type'] || '').trim(),
-      aging: String(r['Aging'] || '').trim(),
-      obs: String(r['Obs'] || '').trim(),
-      decision: String(r['Decision'] || '').trim()
-    }));
+    const headers = Object.keys(json[0]);
+    importState = { step: 1, file: file, fileName: file.name, headers, rows: json, mapping: {}, validRows: [], invalidRows: [] };
 
-    if (!rows.length) { alert('No valid rows found.'); hideLoadingOverlay(); return; }
+    // Auto-detect column mapping
+    autoDetectMapping(headers);
+    hideLoadingOverlay();
+    openImportModal();
+    renderImportStep1();
+  } catch(err) {
+    console.error('Excel read error:', err);
+    alert('Error reading Excel: ' + err.message);
+    hideLoadingOverlay();
+  }
+}
 
-    const replace = countryMaterials.length > 0
-      ? confirm(`${settingsCountryMat} already has ${countryMaterials.length} materials.\n\nReplace all with ${rows.length} new items from Excel?`)
-      : true;
-
-    if (!replace) { hideLoadingOverlay(); return; }
-
-    document.getElementById('loading-text').textContent = 'Clearing old data...';
-    if (countryMaterials.length > 0) {
-      await deleteMaterialsForCountry(countryId);
+function autoDetectMapping(headers) {
+  const headersLower = headers.map(h => h.toLowerCase().trim());
+  importState.mapping = {};
+  for (const [field, patterns] of Object.entries(COLUMN_PATTERNS)) {
+    let bestMatch = null;
+    for (const pattern of patterns) {
+      const idx = headersLower.findIndex(h => h === pattern || h.includes(pattern));
+      if (idx >= 0) { bestMatch = headers[idx]; break; }
     }
+    if (bestMatch) importState.mapping[field] = bestMatch;
+  }
+}
 
-    document.getElementById('loading-text').textContent = `Uploading ${rows.length} materials...`;
-    await uploadMaterialsToCountry(countryId, rows);
+function openImportModal() { document.getElementById('import-modal').classList.add('open'); }
+function closeImportModal() { document.getElementById('import-modal').classList.remove('open'); importState.step = 0; }
 
+// STEP 1: Column Mapping Confirmation
+function renderImportStep1() {
+  importState.step = 1;
+  document.getElementById('import-step-label').textContent = 'Step 1 of 3 — Column Mapping';
+  const body = document.getElementById('import-modal-body');
+  const foot = document.getElementById('import-modal-foot');
+  const headers = importState.headers;
+  const mapping = importState.mapping;
+  const allFields = [
+    { key: 'itemNumber', label: 'Item Number', req: true },
+    { key: 'itemName', label: 'Item Name', req: true },
+    { key: 'unit', label: 'Unit', req: true },
+    { key: 'priceUnit', label: 'Price/Unit', req: true },
+    { key: 'priceKpcs', label: 'Price/Kpcs', req: false },
+    { key: 'itemType', label: 'Item Type (RM/FG)', req: true },
+    { key: 'productLine', label: 'Product Line (SL/RFID)', req: true },
+    { key: 'prodType', label: 'Prod Type', req: true }
+  ];
+  const optionsList = headers.map(h => `<option value="${h}">${h}</option>`).join('');
+
+  let html = `<div style="font-size:.78rem;color:var(--label);margin-bottom:12px">
+    File: <strong>${importState.fileName}</strong> &middot; ${importState.rows.length} rows detected &middot; ${headers.length} columns
+  </div>
+  <div style="font-size:.72rem;color:#aaa;margin-bottom:8px">Map each QUO field to the corresponding Excel column. Auto-detected mappings are pre-selected.</div>
+  <table class="mapping-table"><thead><tr><th style="width:35%">QUO Field</th><th style="width:10%"></th><th style="width:55%">Excel Column</th></tr></thead><tbody>`;
+
+  allFields.forEach(f => {
+    const isMapped = !!mapping[f.key];
+    const statusCls = f.req ? (isMapped ? 'field-mapped' : 'field-unmapped') : 'field-optional';
+    const statusTxt = f.req ? (isMapped ? '&#10003;' : '&#10007; Required') : '(optional)';
+    html += `<tr>
+      <td><span class="${f.req ? 'field-required' : ''}">${f.label}${f.req ? ' *' : ''}</span></td>
+      <td style="text-align:center"><span class="${statusCls}">${statusTxt}</span></td>
+      <td><select id="map-${f.key}" onchange="updateMapping('${f.key}',this.value)">
+        <option value="">-- Not mapped --</option>${optionsList}
+      </select></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+
+  // Preview first 5 rows
+  html += '<div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--label);margin-top:16px;margin-bottom:6px">Data Preview (first 5 rows)</div>';
+  html += renderPreviewTable(5);
+
+  body.innerHTML = html;
+
+  // Set dropdown values for auto-detected mappings
+  allFields.forEach(f => {
+    const sel = document.getElementById('map-' + f.key);
+    if (sel && mapping[f.key]) sel.value = mapping[f.key];
+  });
+
+  foot.innerHTML = `
+    <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
+    <button class="btn btn-primary" id="import-next-btn" onclick="importStep2()">Validate &amp; Continue</button>`;
+}
+
+function updateMapping(field, excelCol) {
+  if (excelCol) importState.mapping[field] = excelCol;
+  else delete importState.mapping[field];
+}
+
+function renderPreviewTable(limit) {
+  const rows = importState.rows.slice(0, limit);
+  const headers = importState.headers.slice(0, 10); // show max 10 columns
+  let html = '<div style="overflow-x:auto"><table class="preview-table"><thead><tr>';
+  headers.forEach(h => { html += `<th>${h}</th>`; });
+  if (importState.headers.length > 10) html += '<th>...</th>';
+  html += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += '<tr>';
+    headers.forEach(h => {
+      const v = r[h];
+      html += `<td>${v != null ? String(v).substring(0, 30) : ''}</td>`;
+    });
+    if (importState.headers.length > 10) html += '<td>...</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+// STEP 2: Validation
+function importStep2() {
+  const mapping = importState.mapping;
+  // Check required fields are mapped
+  const missing = REQUIRED_FIELDS.filter(f => !mapping[f]);
+  if (missing.length) {
+    alert('Required fields not mapped: ' + missing.join(', ') + '\n\nPlease map all required fields before continuing.');
+    return;
+  }
+  importState.step = 2;
+  document.getElementById('import-step-label').textContent = 'Step 2 of 3 — Validation';
+
+  // Validate each row
+  const validRows = [];
+  const invalidRows = [];
+  importState.rows.forEach((row, idx) => {
+    const errors = [];
+    const itemNum = row[mapping.itemNumber];
+    const itemName = row[mapping.itemName];
+    const unit = String(row[mapping.unit] || '').trim().toUpperCase();
+    const priceUnit = row[mapping.priceUnit];
+    const itemType = String(row[mapping.itemType] || '').trim().toUpperCase();
+    const productLine = String(row[mapping.productLine] || '').trim().toUpperCase();
+    const prodTypeRaw = String(row[mapping.prodType] || '').trim();
+
+    if (!itemNum) errors.push('Missing item number');
+    if (!itemName) errors.push('Missing item name');
+    if (!['M', 'PCS', 'SHEET', 'KG', 'L', 'UNIT'].includes(unit) && unit) {} // accept any non-empty unit
+    if (!unit) errors.push('Missing unit');
+    if (priceUnit == null || isNaN(Number(priceUnit))) errors.push('Invalid price/unit');
+    if (!['RM', 'FG'].includes(itemType)) errors.push('Item type must be RM or FG, got: ' + itemType);
+    if (!['SL', 'RFID'].includes(productLine) && productLine) {} // accept non-standard
+    if (!productLine) errors.push('Missing product line');
+
+    if (errors.length) {
+      invalidRows.push({ rowNum: idx + 2, data: row, errors });
+    } else {
+      const material = {
+        itemNumber: String(itemNum).trim(),
+        itemName: String(itemName).trim(),
+        unit: unit || String(row[mapping.unit] || '').trim(),
+        priceUnit: Number(priceUnit) || 0,
+        itemType: itemType,
+        productLine: productLine || String(row[mapping.productLine] || '').trim(),
+        prodType: normalizeProdType(prodTypeRaw)
+      };
+      // Optional: priceKpcs
+      if (mapping.priceKpcs && row[mapping.priceKpcs] != null) {
+        material.priceKpcs = Number(row[mapping.priceKpcs]) || 0;
+      }
+      validRows.push(material);
+    }
+  });
+
+  importState.validRows = validRows;
+  importState.invalidRows = invalidRows;
+
+  const body = document.getElementById('import-modal-body');
+  let html = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+    <span class="import-stat">${validRows.length} valid rows</span>
+    <span class="import-stat" style="${invalidRows.length ? 'background:#fbe9e7;border-color:#ef9a9a;color:#c62828' : ''}">${invalidRows.length} invalid rows</span>
+    <span class="import-stat">${importState.rows.length} total rows</span>
+  </div>`;
+
+  if (invalidRows.length) {
+    html += `<div class="import-error-list">
+      <strong>${invalidRows.length} rows will be skipped:</strong>
+      <ul>${invalidRows.slice(0, 20).map(r => `<li>Row ${r.rowNum}: ${r.errors.join('; ')}</li>`).join('')}
+      ${invalidRows.length > 20 ? `<li>... and ${invalidRows.length - 20} more</li>` : ''}</ul>
+    </div>`;
+  }
+
+  if (!validRows.length) {
+    html += '<div class="import-warning"><strong>No valid rows to import.</strong>Please check your column mapping and data.</div>';
+    body.innerHTML = html;
+    document.getElementById('import-modal-foot').innerHTML = `
+      <button class="btn btn-ghost" onclick="renderImportStep1()">Back</button>
+      <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>`;
+    return;
+  }
+
+  // Preview valid data
+  html += '<div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--label);margin-top:12px;margin-bottom:6px">Mapped Data Preview (first 5 valid rows)</div>';
+  html += '<div style="overflow-x:auto"><table class="preview-table"><thead><tr><th>Item Number</th><th>Name</th><th>Unit</th><th>Price/Unit</th><th>Type</th><th>Line</th><th>Prod Type</th></tr></thead><tbody>';
+  validRows.slice(0, 5).forEach(m => {
+    html += `<tr>
+      <td>${m.itemNumber}</td><td>${m.itemName.substring(0, 40)}</td><td>${m.unit}</td>
+      <td>${m.priceUnit.toFixed(4)}</td><td>${m.itemType}</td><td>${m.productLine}</td><td>${m.prodType}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  body.innerHTML = html;
+  document.getElementById('import-modal-foot').innerHTML = `
+    <button class="btn btn-ghost" onclick="renderImportStep1()">Back</button>
+    <button class="btn btn-primary" onclick="importStep3()">Confirm Import</button>`;
+}
+
+// STEP 3: Confirmation + Execute
+function importStep3() {
+  importState.step = 3;
+  document.getElementById('import-step-label').textContent = 'Step 3 of 3 — Confirm';
+  const body = document.getElementById('import-modal-body');
+  const hadPrevious = countryMaterials.length > 0;
+
+  let html = `<div style="text-align:center;padding:20px 0">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:8px">${importState.validRows.length} materials ready to import</div>
+    <div style="font-size:.78rem;color:var(--label);margin-bottom:16px">into <strong>${settingsCountryMat}</strong></div>`;
+
+  if (hadPrevious) {
+    html += `<div class="import-warning" style="text-align:left;max-width:600px;margin:0 auto">
+      <strong>This will REPLACE all ${countryMaterials.length} existing materials for ${settingsCountryMat}.</strong>
+      Previous data will be permanently deleted and replaced with ${importState.validRows.length} new records from <em>${importState.fileName}</em>.
+    </div>`;
+  }
+
+  if (importState.invalidRows.length) {
+    html += `<div style="font-size:.72rem;color:#aaa;margin-top:8px">${importState.invalidRows.length} invalid rows will be skipped.</div>`;
+  }
+
+  html += '</div>';
+  body.innerHTML = html;
+
+  document.getElementById('import-modal-foot').innerHTML = `
+    <button class="btn btn-ghost" onclick="importStep2()">Back</button>
+    <button class="btn btn-primary" style="background:#c62828" id="import-exec-btn" onclick="executeImport()">Replace &amp; Import</button>`;
+}
+
+async function executeImport() {
+  const btn = document.getElementById('import-exec-btn');
+  btn.textContent = 'Importing...'; btn.disabled = true;
+
+  const countryId = COUNTRY_DATA[settingsCountryMat].id;
+  const hadPrevious = countryMaterials.length > 0;
+
+  try {
+    document.getElementById('import-step-label').textContent = 'Importing...';
+    const batchId = await importMaterials(countryId, importState.validRows, {
+      fileName: importState.fileName,
+      columnMapping: importState.mapping,
+      replacedPrevious: hadPrevious
+    });
+
+    // Reload
     countryMaterials = await loadMaterialsForCountry(countryId);
-    matPage = 0;
-    renderMaterialsTable();
-    flashSave('materials-saved');
-    // Also refresh autocomplete cache
     if (COUNTRY_DATA[settingsCountryMat]) {
       COUNTRY_DATA[settingsCountryMat].materials = countryMaterials;
     }
+    matPage = 0;
+    renderMaterialsTable();
+    updateImportInfo();
+    loadImportHistory();
+
+    // Show success in modal
+    document.getElementById('import-step-label').textContent = 'Complete';
+    document.getElementById('import-modal-body').innerHTML = `
+      <div class="import-success" style="text-align:center;padding:20px">
+        <div style="font-size:1.3rem;margin-bottom:8px">&#10003;</div>
+        <strong>${importState.validRows.length} materials imported successfully</strong><br>
+        <span style="font-size:.72rem;color:#666">Country: ${settingsCountryMat} &middot; File: ${importState.fileName}</span>
+        ${importState.invalidRows.length ? '<br><span style="font-size:.72rem;color:#aaa">' + importState.invalidRows.length + ' rows skipped</span>' : ''}
+      </div>`;
+    document.getElementById('import-modal-foot').innerHTML = `
+      <div></div>
+      <button class="btn btn-primary" onclick="closeImportModal()">Done</button>`;
+
+    flashSave('materials-saved');
   } catch(err) {
-    console.error('Materials upload error:', err);
-    alert('Error uploading: ' + err.message);
-  } finally {
-    hideLoadingOverlay();
+    console.error('Import error:', err);
+    document.getElementById('import-modal-body').innerHTML = `
+      <div class="import-error-list" style="text-align:center;padding:20px">
+        <strong>Import failed</strong><br>${err.message}
+      </div>`;
+    document.getElementById('import-modal-foot').innerHTML = `
+      <button class="btn btn-ghost" onclick="closeImportModal()">Close</button>
+      <button class="btn btn-primary" onclick="executeImport()">Retry</button>`;
+    btn.textContent = 'Replace & Import'; btn.disabled = false;
   }
 }
 
@@ -2292,6 +2896,7 @@ async function clearAllMaterials() {
     countryMaterials = [];
     if (COUNTRY_DATA[settingsCountryMat]) COUNTRY_DATA[settingsCountryMat].materials = [];
     renderMaterialsTable();
+    updateImportInfo();
     flashSave('materials-saved');
   } catch(e) { alert('Error: ' + e.message); }
   finally { hideLoadingOverlay(); }
@@ -2308,85 +2913,195 @@ async function deleteMaterialById(matId, ref) {
       if (idx >= 0) countryMaterials.splice(idx, 1);
       if (COUNTRY_DATA[settingsCountryMat]) COUNTRY_DATA[settingsCountryMat].materials = countryMaterials;
       renderMaterialsTable();
+      updateImportInfo();
     } catch(e) { alert('Error: ' + e.message); }
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// MATERIAL AUTOCOMPLETE (quotation form)
-// ══════════════════════════════════════════════════════════
-function getMaterialsForAutocomplete(type) {
-  const country = S.country;
-  if (!country || !COUNTRY_DATA[country]) return [];
-  const mats = COUNTRY_DATA[country].materials || [];
-  if (type === 'ht') {
-    // For HT: PAPER items (SHEET unit) are primary, also show RM items
-    return mats.filter(m => m.prodType === 'PAPER' || (m.itemType === 'RM' && m.unit === 'SHEET'));
-  } else {
-    // For PFL: Ribbon items (M unit) are primary, also show RM items with M unit
-    return mats.filter(m => m.prodType === 'Ribbon' || (m.itemType === 'RM' && m.unit === 'M'));
+// Close dropdowns on click outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.mat-add-wrap')) {
+    document.getElementById('mat-search-dropdown')?.classList.remove('open');
   }
+});
+
+// ══════════════════════════════════════════════════════════
+// MATERIAL SELECTOR (multi-material for quotation)
+// ══════════════════════════════════════════════════════════
+function getUnitBadge(unit){
+  const u=(unit||'').toUpperCase();
+  if(u==='SHEET')return'<span class="unit-badge sheet">SHEET</span>';
+  if(u==='M')return'<span class="unit-badge m">M</span>';
+  if(u==='PCS')return'<span class="unit-badge pcs">PCS</span>';
+  return'<span class="unit-badge other">'+u+'</span>';
 }
 
-function materialAutocomplete(input, type) {
-  const listId = 'ac-' + type + '-list';
-  const list = document.getElementById(listId);
-  if (!list) return;
-  const q = input.value.toLowerCase().trim();
-  const mats = getMaterialsForAutocomplete(type);
-
-  if (!mats.length || q.length < 1) { list.classList.remove('open'); return; }
-
-  const matches = mats.filter(m =>
-    m.reference.toLowerCase().includes(q) || (m.name || '').toLowerCase().includes(q)
-  ).slice(0, 15);
-
-  if (!matches.length) { list.classList.remove('open'); return; }
-
-  list.innerHTML = matches.map(m => {
-    const price = m.priceUnit != null ? 'EUR ' + m.priceUnit.toFixed(4) : '';
-    const desc = (m.name || '').substring(0, 50);
-    return `<div class="mat-ac-item" onmousedown="selectMaterial('${type}','${m.reference.replace(/'/g, "\\'")}',${m.priceUnit || 0},'${(m.unit || '').replace(/'/g, "\\'")}','${desc.replace(/'/g, "\\'")}')">
-      <span class="ac-ref">${m.reference}</span>
-      <span class="ac-name">${desc}</span>
-      <span class="ac-price">${price}</span>
-    </div>`;
-  }).join('');
-  list.classList.add('open');
+function renderSelectedMaterials(){
+  const wrap=document.getElementById('mat-sel-wrap');
+  if(!wrap)return;
+  if(!selectedMaterials.length){
+    wrap.innerHTML='<div class="mat-sel-empty">No materials selected. Click "+ Add Material" to select from the catalog.</div>';
+    updateMaterialTotalDisplay();
+    return;
+  }
+  let html=`<table class="mat-sel-table"><thead><tr>
+    <th>Code</th><th>Name</th><th>Unit</th><th class="r">Cat. Price</th><th class="r">Quo. Price</th><th></th>
+  </tr></thead><tbody>`;
+  selectedMaterials.forEach((m,i)=>{
+    const overCls=m.isOverridden?' overridden':'';
+    html+=`<tr>
+      <td class="mono" style="font-size:.65rem;font-weight:600">${m.itemNumber||'--'}</td>
+      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.itemName||''}">${m.itemName||'--'}</td>
+      <td>${getUnitBadge(m.unit)}</td>
+      <td class="r cat-price">${m.catalogPrice!=null?m.catalogPrice.toFixed(4):'--'}</td>
+      <td class="r"><input type="number" class="quo-price-input${overCls}" value="${m.quotationPrice}" step="0.0001" min="0"
+        onchange="updateQuoPrice(${i},this.value)" oninput="updateQuoPrice(${i},this.value)"></td>
+      <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1rem;font-weight:700;cursor:pointer;padding:2px 6px"
+        onclick="removeSelectedMaterial(${i})">&#10005;</button></td>
+    </tr>`;
+  });
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
+  updateMaterialTotalDisplay();
 }
 
-function selectMaterial(type, ref, price, unit, name) {
-  if (type === 'ht') {
-    document.getElementById('f-mat-ref').value = ref;
-    if (price) document.getElementById('f-mat-cost').value = price;
-    // Try to extract GSM from reference (e.g. FSC350... = 350gsm)
-    const gsmMatch = ref.match(/^FSC(\d{2,3})/i) || ref.match(/(\d{3})\s*g/i);
-    if (gsmMatch) document.getElementById('f-gsm').value = parseInt(gsmMatch[1]);
-  } else {
-    document.getElementById('pf-mat-ref').value = ref;
-    if (price) document.getElementById('pf-mat-cost').value = price;
+function updateQuoPrice(idx,val){
+  const m=selectedMaterials[idx];
+  if(!m)return;
+  m.quotationPrice=parseFloat(val)||0;
+  m.isOverridden=Math.abs(m.quotationPrice-m.catalogPrice)>0.00001;
+  const inp=document.querySelectorAll('.quo-price-input')[idx];
+  if(inp){
+    if(m.isOverridden)inp.classList.add('overridden');
+    else inp.classList.remove('overridden');
   }
-  // Close dropdown
-  document.getElementById('ac-' + type + '-list').classList.remove('open');
   recalcAll();
 }
 
-// Close autocomplete on click outside
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.mat-ac-wrap')) {
-    document.querySelectorAll('.mat-ac-list').forEach(l => l.classList.remove('open'));
+function removeSelectedMaterial(idx){
+  selectedMaterials.splice(idx,1);
+  renderSelectedMaterials();
+  recalcAll();
+}
+
+function addMaterialToSelection(m){
+  // Don't add duplicates
+  if(selectedMaterials.find(s=>s.materialId===m.id))return;
+  const ref=m.itemNumber||m.reference||'';
+  const name=m.itemName||m.name||'';
+  const price=m.priceUnit||0;
+  selectedMaterials.push({
+    materialId:m.id||'',
+    itemNumber:ref,
+    itemName:name,
+    unit:(m.unit||'').toUpperCase(),
+    catalogPrice:price,
+    quotationPrice:price,
+    isOverridden:false
+  });
+  renderSelectedMaterials();
+  recalcAll();
+}
+
+function updateMaterialTotalDisplay(){
+  const el=document.getElementById('mat-total-val');
+  if(!el)return;
+  let total=0;
+  if(S.type==='HT') total=getHTMaterialCostPerLabel();
+  else if(S.type==='PFL') total=getPFLMaterialCostPerUnit();
+  el.textContent='EUR '+total.toFixed(6);
+}
+
+// Material live search (type-ahead)
+function filterMaterialSearch(){
+  const dd=document.getElementById('mat-search-dropdown');
+  const results=document.getElementById('mat-search-results');
+  const q=(document.getElementById('mat-search-q')?.value||'').toLowerCase().trim();
+
+  // Need at least 1 char to show results
+  if(q.length<1){ dd.classList.remove('open'); return; }
+
+  const country=S.country;
+  if(!country||!COUNTRY_DATA[country]){
+    results.innerHTML='<div style="padding:12px;color:#aaa;font-size:.72rem;text-align:center">No materials imported. Import in Settings.</div>';
+    dd.classList.add('open');
+    return;
   }
-});
+  const mats=COUNTRY_DATA[country].materials||[];
+  if(!mats.length){
+    results.innerHTML='<div style="padding:12px;color:#aaa;font-size:.72rem;text-align:center">No materials imported for this country.</div>';
+    dd.classList.add('open');
+    return;
+  }
+
+  // Split query into words for multi-word matching
+  const words=q.split(/\s+/).filter(Boolean);
+
+  const filtered=mats.filter(m=>{
+    const name=(m.itemName||m.name||'').toLowerCase();
+    const ref=(m.itemNumber||m.reference||'').toLowerCase();
+    const combined=name+' '+ref;
+    return words.every(w=>combined.includes(w));
+  }).sort((a,b)=>{
+    const aN=(a.itemName||a.name||'').toLowerCase();
+    const bN=(b.itemName||b.name||'').toLowerCase();
+    // Prioritize names starting with the first word
+    const aStarts=aN.startsWith(words[0])?0:1;
+    const bStarts=bN.startsWith(words[0])?0:1;
+    if(aStarts!==bStarts)return aStarts-bStarts;
+    return aN.localeCompare(bN);
+  }).slice(0,20);
+
+  if(!filtered.length){
+    results.innerHTML='<div style="padding:12px;color:#aaa;font-size:.72rem;text-align:center">No matches</div>';
+    dd.classList.add('open');
+    return;
+  }
+
+  results.innerHTML=filtered.map(m=>{
+    const ref=m.itemNumber||m.reference||'';
+    const name=m.itemName||m.name||'';
+    const price=m.priceUnit!=null?'EUR '+m.priceUnit.toFixed(4):'';
+    const unit=(m.unit||'').toUpperCase();
+    const already=selectedMaterials.find(s=>s.materialId===m.id);
+    return`<div class="mat-search-item${already?' style="opacity:.4;pointer-events:none"':''}" onmousedown="addMaterialFromSearch('${m.id}')">
+      <span class="sr-name">${name.substring(0,60)}</span>
+      ${getUnitBadge(unit)}
+      <span class="sr-price">${price}</span>
+      <span class="sr-ref">${ref}</span>
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function addMaterialFromSearch(matId){
+  const country=S.country;
+  if(!country||!COUNTRY_DATA[country])return;
+  const mats=COUNTRY_DATA[country].materials||[];
+  const m=mats.find(x=>x.id===matId);
+  if(m){
+    addMaterialToSelection(m);
+    // Clear input and close
+    const q=document.getElementById('mat-search-q');
+    if(q)q.value='';
+    document.getElementById('mat-search-dropdown').classList.remove('open');
+  }
+}
 
 // ══════════════════════════════════════════════════════════
 // RESET ALL
 // ══════════════════════════════════════════════════════════
 function resetAll(){
   // Clear selections
-  S.country=null; S.line=null; S.type=null; tech={}; productImageData=null;
+  S.country=null; S.line=null; S.type=null; tech={}; productImageData=null; selectedMaterials=[];
   const csel=document.getElementById('country-select'); if(csel) csel.value='';
   // Deselect tiles
   document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
+  // Hide progressive sections
+  const lineDiv=document.getElementById('p1-line'); if(lineDiv) lineDiv.style.display='none';
+  const typeDiv=document.getElementById('p1-type'); if(typeDiv) typeDiv.style.display='none';
+  const htTechDiv=document.getElementById('p1-ht-tech'); if(htTechDiv) htTechDiv.style.display='none';
+  S.htTech=null;
   // Reset all inputs
   document.querySelectorAll('#page-2 input[type="number"], #page-2 input[type="text"]').forEach(el=>{
     if(el.classList.contains('calc')||el.readOnly) el.value='';

@@ -148,29 +148,52 @@ async function loadMaterialsForCountry(countryId) {
   }
 }
 
-async function uploadMaterialsToCountry(countryId, rows) {
-  try {
-    // Batch write (max 500 per batch)
-    const colRef = db.collection('countries').doc(countryId).collection('materials');
-    const batchSize = 450;
-    for (let i = 0; i < rows.length; i += batchSize) {
-      const batch = db.batch();
-      const chunk = rows.slice(i, i + batchSize);
-      chunk.forEach(row => {
-        const docRef = colRef.doc();
-        batch.set(docRef, {
-          ...row,
-          uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          uploadedBy: currentUser ? currentUser.uid : ''
-        });
-      });
-      await batch.commit();
-    }
-    return true;
-  } catch (err) {
-    console.error('Error uploading materials:', err);
-    return false;
+async function importMaterials(countryId, materials, metadata) {
+  const materialsRef = db.collection('countries').doc(countryId).collection('materials');
+  const batchSize = 450;
+  const importBatchId = db.collection('_').doc().id; // generate unique ID
+
+  // Step 1: Delete existing materials
+  const existing = await materialsRef.get();
+  const docs = [];
+  existing.forEach(doc => docs.push(doc.ref));
+  for (let i = 0; i < docs.length; i += batchSize) {
+    const batch = db.batch();
+    docs.slice(i, i + batchSize).forEach(ref => batch.delete(ref));
+    await batch.commit();
   }
+
+  // Step 2: Write new materials in batches
+  for (let i = 0; i < materials.length; i += batchSize) {
+    const batch = db.batch();
+    const chunk = materials.slice(i, i + batchSize);
+    chunk.forEach(material => {
+      const ref = materialsRef.doc();
+      batch.set(ref, {
+        ...material,
+        importBatchId,
+        uploadedBy: currentUser ? currentUser.uid : '',
+        uploadedByName: currentUser ? (currentUser.displayName || currentUser.email) : '',
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    await batch.commit();
+  }
+
+  // Step 3: Log the import
+  await db.collection('countries').doc(countryId)
+    .collection('materialImports').add({
+      importedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      importedBy: currentUser ? currentUser.uid : '',
+      importedByName: currentUser ? (currentUser.displayName || currentUser.email) : '',
+      fileName: metadata.fileName || '',
+      totalRecords: materials.length,
+      columnMapping: metadata.columnMapping || {},
+      replacedPrevious: metadata.replacedPrevious || false,
+      importBatchId
+    });
+
+  return importBatchId;
 }
 
 async function deleteMaterialsForCountry(countryId) {
@@ -192,6 +215,22 @@ async function deleteMaterialsForCountry(countryId) {
   }
 }
 
+// ── MATERIAL IMPORTS (history log) ──────────────────────
+async function loadMaterialImports(countryId) {
+  try {
+    const snapshot = await db.collection('countries').doc(countryId)
+      .collection('materialImports').orderBy('importedAt', 'desc').limit(20).get();
+    const imports = [];
+    snapshot.forEach(doc => {
+      imports.push({ id: doc.id, ...doc.data() });
+    });
+    return imports;
+  } catch (err) {
+    console.error('Error loading import history:', err);
+    return [];
+  }
+}
+
 // ── USERS (admin) ────────────────────────────────────────
 async function loadAllUsers() {
   try {
@@ -205,6 +244,29 @@ async function loadAllUsers() {
     console.error('Error loading users:', err);
     return [];
   }
+}
+
+// ── FIXED COSTS (per country) ───────────────────────────
+async function loadFixedCosts(countryId) {
+  try {
+    const snapshot = await db.collection('countries').doc(countryId)
+      .collection('fixedCosts').get();
+    const costs = [];
+    snapshot.forEach(doc => { costs.push({ id: doc.id, ...doc.data() }); });
+    return costs;
+  } catch (err) { console.error('Error loading fixed costs:', err); return []; }
+}
+
+async function saveFixedCosts(countryId, costs) {
+  try {
+    const colRef = db.collection('countries').doc(countryId).collection('fixedCosts');
+    const existing = await colRef.get();
+    const batch = db.batch();
+    existing.forEach(doc => batch.delete(doc.ref));
+    costs.forEach(c => { const ref = colRef.doc(); batch.set(ref, c); });
+    await batch.commit();
+    return true;
+  } catch (err) { console.error('Error saving fixed costs:', err); return false; }
 }
 
 // ── LOAD ALL APP DATA ────────────────────────────────────
@@ -235,7 +297,12 @@ async function loadAppData() {
         accountVal: m.accountVal || 0, roiYears: m.roiYears || 8,
         maintAnnual: m.maintAnnual || 0, setupTime: m.setupTime || 0,
         sheetsSetup: m.sheetsSetup || 0, empCost: m.empCost || 0,
-        socialPct: m.socialPct || 0, extraTime: m.extraTime || 0
+        socialPct: m.socialPct || 0, extraTime: m.extraTime || 0,
+        technology: m.technology || 'common',
+        konicaClickCost: m.konicaClickCost || 0,
+        okiClickCost: m.okiClickCost || 0,
+        shift: m.shift || 'day',
+        wastePercent: m.wastePercent || 0
       }));
       const pflCfg = pflMachines.map(m => ({
         name: m.name, nomSpeed: m.nomSpeed || 0, efficiency: m.efficiency || 90,
@@ -251,7 +318,7 @@ async function loadAppData() {
       // Calculate derived machine values
       const htDerived = htCfg.map(m => {
         const calc = calcMachine(m, hy, elec);
-        return { name: m.name, setup: calc.setupCost, oneHit: calc.oneHit, sheetsSetup: m.sheetsSetup };
+        return { name: m.name, setup: calc.setupCost, oneHit: calc.oneHit, sheetsSetup: m.sheetsSetup, technology: m.technology || 'common', konicaClickCost: m.konicaClickCost || 0, okiClickCost: m.okiClickCost || 0, wastePercent: m.wastePercent || 0 };
       });
       const pflDerived = pflCfg.map(m => {
         const calc = calcMachine(m, hy, elec);

@@ -44,6 +44,18 @@ service cloud.firestore {
         allow read: if isLoggedIn() && isCountryUser(countryId);
         allow write: if isLoggedIn() && (isAdmin() || (userData().role == 'supervisor' && isCountryUser(countryId)));
       }
+
+      // FIXED COSTS: admin + own-country supervisor can write
+      match /fixedCosts/{costId} {
+        allow read: if isLoggedIn() && isCountryUser(countryId);
+        allow write: if isLoggedIn() && (isAdmin() || (userData().role == 'supervisor' && isCountryUser(countryId)));
+      }
+
+      // MATERIAL IMPORTS: import history log
+      match /materialImports/{importId} {
+        allow read: if isLoggedIn() && (isAdmin() || (userData().role == 'supervisor' && isCountryUser(countryId)));
+        allow write: if isLoggedIn() && (isAdmin() || (userData().role == 'supervisor' && isCountryUser(countryId)));
+      }
     }
 
     // MACHINE TEMPLATES: all authenticated read, admin writes
