@@ -200,27 +200,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
 .tech-calc-val{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:600;color:var(--input-text)}
 
 /* COST TABLE */
-.cost-outer{display:grid;grid-template-columns:160px 1fr;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
-.cost-labels{background:var(--surface2);border-right:1px solid var(--border-light)}
-.cost-labels .cost-col-head{background:transparent;color:#aaa;text-align:left;padding:8px 12px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.cost-labels .cost-col-qty{background:transparent;color:transparent;padding:6px 12px;font-size:.78rem;border-bottom:1px solid var(--border-light)}
-.cost-labels .cost-row{display:flex;align-items:center;padding:6px 12px;border-bottom:1px solid #f0f0f0}
-.cost-labels .cost-row:last-child{border-bottom:none}
-.cost-labels .cost-row .cost-lbl{font-size:.68rem;font-weight:600;color:var(--label)}
-.cost-data{display:grid;grid-template-columns:repeat(4,1fr)}
-.cost-data .cost-col{border-right:1px solid var(--border-light)}
-.cost-data .cost-col:last-child{border-right:none}
-.cost-col-head{background:#2a2a2a;padding:8px 12px;text-align:center;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb}
-.cost-col-qty{background:#f0f0f0;padding:6px 12px;text-align:center;font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border-light)}
-.cost-row{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid #f0f0f0}
-.cost-row:last-child{border-bottom:none}
-.cost-row.total-row{background:#f8f8f8}
-.cost-row.price-row{background:#f0f4ff}
-.cost-row.gp-row{background:#f0fff4}
-.cost-val{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:600;color:var(--input-text)}
-.cost-val.total{color:var(--dark);font-weight:700}
-.cost-val.price{color:#2a4a80;font-weight:700}
-.cost-val.gp{color:var(--green);font-weight:700}
+.cost-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.72rem}
+.cost-table th{padding:8px 10px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-bottom:2px solid var(--border-light)}
+.cost-table th:first-child{text-align:left;width:180px;color:#aaa;background:var(--surface2)}
+.cost-table th:not(:first-child){text-align:center;background:#2a2a2a;color:#bbb}
+.cost-table .qty-row td{padding:6px 10px;font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;border-bottom:1px solid var(--border-light)}
+.cost-table .qty-row td:first-child{background:var(--surface2);color:transparent}
+.cost-table .qty-row td:not(:first-child){text-align:right;background:#f0f0f0;color:var(--dark)}
+.cost-table td{padding:6px 10px;border-bottom:1px solid #f0f0f0}
+.cost-table td:first-child{font-size:.68rem;font-weight:600;color:var(--label);background:var(--surface2);border-right:1px solid var(--border-light)}
+.cost-table td:not(:first-child){font-family:'Space Mono',monospace;font-size:.75rem;font-weight:600;color:var(--input-text);text-align:right}
+.cost-table tr.sep-row td{border-bottom:2px solid var(--border-light)}
+.cost-table tr.total-row{background:#f8f8f8}
+.cost-table tr.total-row td:not(:first-child){font-weight:700;color:var(--dark)}
+.cost-table tr.price-row{background:#f0f4ff}
+.cost-table tr.price-row td:not(:first-child){font-weight:700;color:#2a4a80}
+.cost-table tr.gp-row{background:#f0fff4}
+.cost-table tr.gp-row td:not(:first-child){font-weight:700;color:var(--green)}
+/* Legacy grid classes kept for compat */
+.cost-outer{display:none}
+.cost-labels{display:none}
+.cost-data{display:none}
 
 /* PRINT */
 .print-wrap{background:#fff;border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
@@ -608,7 +608,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
         <div class="card-body">
           <div class="fg fg-4">
             <div class="f"><label>Offset Plates (back col.)</label>
-              <div class="input-unit"><input type="number" id="f-plates" value="9" step="0.01" oninput="recalcAll()"><span class="unit">EUR ea</span></div></div>
+              <div class="input-unit"><input type="number" id="f-plates" value="9" step="0.01" oninput="recalcAll()"><span class="unit">EUR ea</span></div>
+              <div id="f-plates-note" style="display:none;font-size:.6rem;color:#7c3aed;font-style:italic;margin-top:2px">Not applicable for digital printing</div></div>
             <div class="f"><label>Prod. Controller (EUR/min)</label>
               <div class="input-unit"><input type="number" id="f-prod-ctrl" value="0.553" step="0.001" oninput="recalcAll()"><span class="unit">EUR</span></div></div>
             <div class="f"><label>Goods In (EUR/min)</label>
@@ -690,10 +691,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark);min
       <div class="card" id="cost-card">
         <div class="card-head"><h3>Cost Breakdown</h3><span class="card-tag">Live calculation</span></div>
         <div class="card-body" style="padding:0;overflow:auto">
-          <div class="cost-outer">
-            <div class="cost-labels" id="cost-labels"></div>
-            <div class="cost-data" id="cost-data-grid"></div>
-          </div>
+          <table class="cost-table" id="cost-table-el">
+            <thead id="cost-thead"></thead>
+            <tbody id="cost-tbody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -1187,7 +1188,22 @@ function selTile(tile){
     }
   }
   if(g==='htTech'){
-    // HT technology selected — now can proceed
+    // HT technology selected — handle offset plates field
+    const platesInput=document.getElementById('f-plates');
+    const platesNote=document.getElementById('f-plates-note');
+    if(platesInput){
+      if(S.htTech==='Digital'){
+        platesInput.dataset.prevValue=platesInput.value;
+        platesInput.value='0';
+        platesInput.disabled=true;
+        if(platesNote) platesNote.style.display='';
+      } else {
+        platesInput.disabled=false;
+        if(platesInput.dataset.prevValue) platesInput.value=platesInput.dataset.prevValue;
+        if(platesNote) platesNote.style.display='none';
+      }
+      recalcAll();
+    }
   }
   // Proceed: for HT need htTech too, for others just country+line+type
   const ready=S.country&&S.line&&S.type&&(S.type!=='HT'||S.htTech);
@@ -1442,20 +1458,7 @@ function renderTechPanel(){
 // COST LABELS (left column of cost table)
 // ══════════════════════════════════════════════════════════
 function renderCostLabels(){
-  const el=document.getElementById('cost-labels');
-  const isHT=S.type==='HT';
-  const rows=isHT
-    ?['Paper cost','Machine cost','Outsourcing','Subtotal','+ Extra cost','Total EUR','Cost / unit','Cost / 1000','Sell price / unit','GP %']
-    :['Material','Machines','Fixed costs','Tooling','Subtotal','+ Extra cost','Total EUR','Cost / unit','Cost / 1000','Sell price / unit','GP %'];
-  el.innerHTML=`<div class="cost-col-head" style="background:transparent;color:#aaa;text-align:left;padding:8px 12px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Line Item</div>
-    <div class="cost-col-qty" style="background:transparent;color:transparent;padding:6px 12px;border-bottom:1px solid var(--border-light)">&nbsp;</div>`
-    +rows.map(r=>{
-      let cls='cost-row';
-      if(r.includes('Subtotal')||r.includes('Extra')||r.includes('Total'))cls+=' total-row';
-      if(r.includes('Sell'))cls+=' price-row';
-      if(r.includes('GP'))cls+=' gp-row';
-      return`<div class="${cls}"><div class="cost-lbl" style="font-size:.68rem;font-weight:600;color:var(--label)">${r}</div></div>`;
-    }).join('');
+  // Now handled by renderHTCostGrid / renderPFLCostGrid via table
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1596,28 +1599,31 @@ function recalcHTCosts(){
 }
 
 function renderHTCostGrid(results){
-  const grid=document.getElementById('cost-data-grid');
-  grid.innerHTML='';
-  ['A','B','C','D'].forEach((lbl,i)=>{
-    const r=results[i],col=document.createElement('div');
-    col.className='cost-col';
-    const v=n=>r?'EUR '+n.toFixed(2):'--';
-    const v5=n=>r?'EUR '+n.toFixed(5):'--';
-    col.innerHTML=`
-      <div class="cost-col-head">Qty ${lbl}</div>
-      <div class="cost-col-qty">${r?r.qty.toLocaleString():'--'}</div>
-      <div class="cost-row"><div class="cost-val">${v(r?.paperCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v(r?.machineCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v(r?.outsourcing)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val total">${v(r?.subtotal)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val">${v(r?.extraCost)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val total">${v(r?.totalCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v5(r?.costPerUnit)}</div></div>
-      <div class="cost-row"><div class="cost-val">${r?'EUR '+r.costPer1000.toFixed(3):'--'}</div></div>
-      <div class="cost-row price-row"><div class="cost-val price">${v5(r?.sellPrice)}</div></div>
-      <div class="cost-row gp-row"><div class="cost-val gp">${r?r.gpActual.toFixed(1)+'%':'--'}</div></div>`;
-    grid.appendChild(col);
-  });
+  const thead=document.getElementById('cost-thead');
+  const tbody=document.getElementById('cost-tbody');
+  const cols=['A','B','C','D'].filter((_,i)=>results[i]);
+  const v=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(2):'--';
+  const v5=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(5):'--';
+  const v3=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(3):'--';
+  thead.innerHTML=`<tr><th>Line Item</th>${cols.map((_,i)=>`<th>Qty ${cols[i]}</th>`).join('')}</tr>`;
+  const qtyRow=`<tr class="qty-row"><td>&nbsp;</td>${cols.map((_,i)=>{const r=results[i];return`<td>${r?r.qty.toLocaleString():'--'}</td>`;}).join('')}</tr>`;
+  const rows=[
+    {lbl:'Paper cost',key:'paperCost',fmt:v},
+    {lbl:'Machine cost',key:'machineCost',fmt:v},
+    {lbl:'Outsourcing',key:'outsourcing',fmt:v,cls:'sep-row'},
+    {lbl:'Subtotal',key:'subtotal',fmt:v,cls:'total-row'},
+    {lbl:'+ Extra cost',key:'extraCost',fmt:v,cls:'total-row'},
+    {lbl:'Total EUR',key:'totalCost',fmt:v,cls:'total-row sep-row'},
+    {lbl:'Cost / unit',key:'costPerUnit',fmt:v5},
+    {lbl:'Cost / 1000',key:'costPer1000',fmt:v3,cls:'sep-row'},
+    {lbl:'Sell price / unit',key:'sellPrice',fmt:v5,cls:'price-row'},
+    {lbl:'GP %',key:null,cls:'gp-row',custom:r=>r?r.gpActual.toFixed(1)+'%':'--'}
+  ];
+  tbody.innerHTML=qtyRow+rows.map(row=>{
+    const cls=row.cls?` class="${row.cls}"`:'';
+    const tds=cols.map((_,i)=>{const r=results[i];return`<td>${row.custom?row.custom(r):row.fmt(r,row.key)}</td>`;}).join('');
+    return`<tr${cls}><td>${row.lbl}</td>${tds}</tr>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1700,29 +1706,32 @@ function recalcPFLCosts(){
 }
 
 function renderPFLCostGrid(results){
-  const grid=document.getElementById('cost-data-grid');
-  grid.innerHTML='';
-  ['A','B','C','D'].forEach((lbl,i)=>{
-    const r=results[i],col=document.createElement('div');
-    col.className='cost-col';
-    const v=n=>r?'EUR '+n.toFixed(2):'--';
-    const v5=n=>r?'EUR '+n.toFixed(5):'--';
-    col.innerHTML=`
-      <div class="cost-col-head">Qty ${lbl}</div>
-      <div class="cost-col-qty">${r?r.qty.toLocaleString():'--'}</div>
-      <div class="cost-row"><div class="cost-val">${v(r?.materialCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v(r?.machineCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v(r?.fixedCosts)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v(r?.toolingTotal)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val total">${v(r?.subtotal)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val">${v(r?.extraCost)}</div></div>
-      <div class="cost-row total-row"><div class="cost-val total">${v(r?.totalCost)}</div></div>
-      <div class="cost-row"><div class="cost-val">${v5(r?.costPerUnit)}</div></div>
-      <div class="cost-row"><div class="cost-val">${r?'EUR '+r.costPer1000.toFixed(3):'--'}</div></div>
-      <div class="cost-row price-row"><div class="cost-val price">${v5(r?.sellPrice)}</div></div>
-      <div class="cost-row gp-row"><div class="cost-val gp">${r?r.gpActual.toFixed(1)+'%':'--'}</div></div>`;
-    grid.appendChild(col);
-  });
+  const thead=document.getElementById('cost-thead');
+  const tbody=document.getElementById('cost-tbody');
+  const cols=['A','B','C','D'].filter((_,i)=>results[i]);
+  const v=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(2):'--';
+  const v5=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(5):'--';
+  const v3=(r,k)=>r?'EUR\u00A0'+r[k].toFixed(3):'--';
+  thead.innerHTML=`<tr><th>Line Item</th>${cols.map((_,i)=>`<th>Qty ${cols[i]}</th>`).join('')}</tr>`;
+  const qtyRow=`<tr class="qty-row"><td>&nbsp;</td>${cols.map((_,i)=>{const r=results[i];return`<td>${r?r.qty.toLocaleString():'--'}</td>`;}).join('')}</tr>`;
+  const rows=[
+    {lbl:'Material',key:'materialCost',fmt:v},
+    {lbl:'Machines',key:'machineCost',fmt:v},
+    {lbl:'Fixed costs',key:'fixedCosts',fmt:v},
+    {lbl:'Tooling',key:'toolingTotal',fmt:v,cls:'sep-row'},
+    {lbl:'Subtotal',key:'subtotal',fmt:v,cls:'total-row'},
+    {lbl:'+ Extra cost',key:'extraCost',fmt:v,cls:'total-row'},
+    {lbl:'Total EUR',key:'totalCost',fmt:v,cls:'total-row sep-row'},
+    {lbl:'Cost / unit',key:'costPerUnit',fmt:v5},
+    {lbl:'Cost / 1000',key:'costPer1000',fmt:v3,cls:'sep-row'},
+    {lbl:'Sell price / unit',key:'sellPrice',fmt:v5,cls:'price-row'},
+    {lbl:'GP %',key:null,cls:'gp-row',custom:r=>r?r.gpActual.toFixed(1)+'%':'--'}
+  ];
+  tbody.innerHTML=qtyRow+rows.map(row=>{
+    const cls=row.cls?` class="${row.cls}"`:'';
+    const tds=cols.map((_,i)=>{const r=results[i];return`<td>${row.custom?row.custom(r):row.fmt(r,row.key)}</td>`;}).join('');
+    return`<tr${cls}><td>${row.lbl}</td>${tds}</tr>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2178,7 +2187,18 @@ function addMachineCard(type){
   const base=type==='ht'
     ?{name:'New Machine',nomSpeed:1000,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,sheetsSetup:0,empCost:26958,socialPct:0,extraTime:0,technology:'common',konicaClickCost:0,okiClickCost:0,wastePercent:0}
     :{name:'New Machine',nomSpeed:500,efficiency:90,accountVal:10000,roiYears:8,maintAnnual:500,setupTime:15,metersSetup:0,empCost:21784,socialPct:23.75,extraTime:8.87};
-  config.push(base);renderMachineCards(type);
+  config.unshift(base);renderMachineCards(type);
+  // Scroll to top and highlight new card
+  const container=document.getElementById(type+'-machines-grid');
+  if(container){
+    container.scrollIntoView({behavior:'smooth'});
+    const firstCard=container.querySelector('.mach-cfg-card');
+    if(firstCard){
+      firstCard.style.transition='background .3s';
+      firstCard.style.background='#fff8f0';
+      setTimeout(()=>{firstCard.style.background='';},1000);
+    }
+  }
 }
 
 async function saveMachines(type){
@@ -2945,17 +2965,17 @@ function renderSelectedMaterials(){
     return;
   }
   let html=`<table class="mat-sel-table"><thead><tr>
-    <th>Code</th><th>Name</th><th>Unit</th><th class="r">Cat. Price</th><th class="r">Quo. Price</th><th></th>
+    <th>Code</th><th style="width:100%">Name</th><th class="r">Quo. Price</th><th>Unit</th><th class="r">Cat. Price</th><th></th>
   </tr></thead><tbody>`;
   selectedMaterials.forEach((m,i)=>{
     const overCls=m.isOverridden?' overridden':'';
     html+=`<tr>
-      <td class="mono" style="font-size:.65rem;font-weight:600">${m.itemNumber||'--'}</td>
-      <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.itemName||''}">${m.itemName||'--'}</td>
-      <td>${getUnitBadge(m.unit)}</td>
-      <td class="r cat-price">${m.catalogPrice!=null?m.catalogPrice.toFixed(4):'--'}</td>
+      <td class="mono" style="font-size:.65rem;font-weight:600;white-space:nowrap">${m.itemNumber||'--'}</td>
+      <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.itemName||''}">${m.itemName||'--'}</td>
       <td class="r"><input type="number" class="quo-price-input${overCls}" value="${m.quotationPrice}" step="0.0001" min="0"
         onchange="updateQuoPrice(${i},this.value)" oninput="updateQuoPrice(${i},this.value)"></td>
+      <td>${getUnitBadge(m.unit)}</td>
+      <td class="r cat-price">${m.catalogPrice!=null?m.catalogPrice.toFixed(4):'--'}</td>
       <td style="text-align:center"><button style="background:transparent;border:none;color:var(--red);font-size:1rem;font-weight:700;cursor:pointer;padding:2px 6px"
         onclick="removeSelectedMaterial(${i})">&#10005;</button></td>
     </tr>`;
